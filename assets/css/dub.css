@@ -47,7 +47,7 @@ button,input{font:inherit;color:inherit}
 .slots button.on i{color:var(--gold2)}
 
 /* ---------- hero (the lobby) ---------- */
-.hero{position:relative;z-index:5;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:40px 18px 118px;pointer-events:none}
+.hero{position:relative;z-index:5;min-height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:space-between;text-align:center;padding:clamp(80px,17vh,170px) 18px 118px;pointer-events:none}
 .hero a,.hero button,.hero .logo,.hero .hud,.hero code{pointer-events:auto}
 .htop{display:flex;flex-direction:column;align-items:center;animation:hin .9s var(--pop) both}
 @keyframes hin{from{opacity:0;transform:translateY(-18px) scale(.96)}}
@@ -344,7 +344,7 @@ input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;bac
   .dock-label{display:none}
   .map canvas{width:96px;height:96px;border-width:3px}
   .storm{font-size:9px;padding:4px 7px;gap:4px}.storm b{font-size:12px}.storm span{display:none}
-  .hero{padding:96px 14px 112px}
+  .hero{padding:clamp(110px,20vh,170px) 14px 112px}
   .logo{width:min(74vw,330px)}
   .slots{gap:2px;padding:4px}
   .slots button{width:36px;height:38px;border-radius:8px}
