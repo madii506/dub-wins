@@ -1,0 +1,7 @@
+{
+  "name": "dub",
+  "private": true,
+  "description": "DUB: your Fortnite wins, paid in SOL.",
+  "engines": { "node": "22.x" },
+  "dependencies": { "@neondatabase/serverless": "^1.0.0" }
+}
