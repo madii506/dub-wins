@@ -64,72 +64,14 @@
   addEventListener('pointermove', e => { px = e.clientX / innerWidth - .5; py = e.clientY / innerHeight - .5; }, { passive: true });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) startLoop(); });
 
-  /* ---------------- intro: the storm closes, DUB drops in, the storm clears ---------------- */
-  const storm = $('#storm'), ring = $('#zring');
-  const ease = { io: t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2, out: t => 1 - Math.pow(1 - t, 4) };
-  let introTimers = [], introAnims = [], introDone = false;
-  function tween(ms, fn, ez = ease.io) {
-    return new Promise(res => { const t0 = performance.now(); const step = now => { const t = Math.min(1, (now - t0) / ms); fn(ez(t)); if (t < 1 && !introDone) requestAnimationFrame(step); else res(); }; requestAnimationFrame(step); });
-  }
-  const setR = r => { H.style.setProperty('--zr', r + 'px'); };
-  function at(ms, fn) { introTimers.push(setTimeout(fn, ms)); }
-  function drop(el, dur, rot) {
-    el.style.opacity = '1';
-    const a = el.animate([
-      { transform: `translateY(-115vh) rotate(${rot || 0}deg) scale(1,1.12)`, easing: 'cubic-bezier(.55,0,.85,.35)' },
-      { transform: 'translateY(3%) rotate(0deg) scale(1.1,.84)', offset: .7, easing: 'cubic-bezier(.2,.7,.3,1)' },
-      { transform: 'translateY(-4%) scale(.96,1.05)', offset: .86, easing: 'ease-in-out' },
-      { transform: 'none' },
-    ], { duration: dur, fill: 'backwards' });
-    introAnims.push(a); return a;
-  }
-  function shake(px) { const a = $('#logo').animate([{ translate: '0 0' }, { translate: `${px}px ${px * .6}px` }, { translate: `${-px}px ${-px * .4}px` }, { translate: '0 0' }], { duration: 260 }); introAnims.push(a);
-    const b = ring.animate([{ transform: 'translate(-50%,-50%) scale(1)' }, { transform: 'translate(-50%,-50%) scale(1.035)' }, { transform: 'translate(-50%,-50%) scale(1)' }], { duration: 300, easing: 'ease-out' }); introAnims.push(b); }
-  function burst() {
-    $('#float').classList.remove('pre');
-    const lr = $('#logo').getBoundingClientRect(), cx = lr.left + lr.width / 2, cy = lr.top + lr.height / 2;
-    floatEls.forEach((f, i) => {
-      const r = f.el.getBoundingClientRect(); const dx = cx - (r.left + r.width / 2), dy = cy - (r.top + r.height / 2);
-      const a = f.bx.animate([{ transform: `translate(${dx}px,${dy}px) scale(.15) rotate(${(i % 2 ? 1 : -1) * 120}deg)`, opacity: 0 }, { opacity: 1, offset: .2 }, { transform: 'none', opacity: 1 }],
-        { duration: 900 + (i % 6) * 70, delay: (i % 7) * 25, easing: 'cubic-bezier(.16,1.25,.35,1)', fill: 'backwards' });
-      introAnims.push(a);
-    });
-  }
+  /* ---------------- the logo's gloss sweep ---------------- */
+  let introDone = false;
   function shine(delay = 0) { $$('.shine').forEach((s, i) => { s.classList.remove('go'); void s.offsetWidth; setTimeout(() => s.classList.add('go'), delay + i * 110); }); }
-  function finishIntro() {
-    if (introDone) return; introDone = true;
-    introTimers.forEach(clearTimeout); introAnims.forEach(a => { try { a.finish(); } catch {} });
-    $$('.L').forEach(l => (l.style.opacity = '1'));
-    H.classList.remove('is-intro', 'is-locked'); H.classList.add('is-ready'); $('#float').classList.remove('pre');
-    ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(e => removeEventListener(e, skip));
-  }
-  function skip() { if (!introDone) { finishIntro(); } }
   function intro() {
-    if (RM || H.classList.contains('is-ready')) { introDone = true; H.classList.remove('is-intro', 'is-locked'); H.classList.add('is-ready'); $$('.L').forEach(l => (l.style.opacity = '1')); return; }
-    ['pointerdown', 'keydown', 'wheel', 'touchstart'].forEach(e => addEventListener(e, skip, { passive: true }));
-    const lr = $('#logo').getBoundingClientRect();
-    H.style.setProperty('--cx', (lr.left + lr.width / 2) + 'px'); H.style.setProperty('--cy', (lr.top + lr.height * .55) + 'px');
-    const rMax = Math.hypot(innerWidth, innerHeight) + 60, rMin = Math.max(150, Math.min(lr.width * .6, innerWidth * .46));
-    setR(rMax);
-    $$('.L').forEach(l => (l.style.opacity = '0'));
-    tween(950, t => setR(rMax + (rMin - rMax) * t));
-    const [Ld, Lu, Lb, Lc] = ['.L.d', '.L.u', '.L.b', '.L.crown'].map(s => $(s));
-    at(900, () => { drop(Ld, 560, -6); });
-    at(1290, () => shake(7));
-    at(1100, () => { drop(Lu, 560, 5); });
-    at(1490, () => shake(8));
-    at(1300, () => { drop(Lb, 560, -4); });
-    at(1690, () => shake(10));
-    at(1560, () => {
-      Lc.style.opacity = '1';
-      introAnims.push(Lc.animate([
-        { transform: 'translateY(-90vh) rotate(-220deg) scale(1.5)', easing: 'cubic-bezier(.5,0,.8,.4)' },
-        { transform: 'translateY(6%) rotate(10deg) scale(.95,.9)', offset: .72, easing: 'cubic-bezier(.2,.7,.3,1)' },
-        { transform: 'rotate(-4deg)', offset: .88 }, { transform: 'none' }], { duration: 640, fill: 'backwards' }));
-    });
-    at(2040, () => { shake(6); tween(700, t => setR(rMin + (rMax - rMin) * t), ease.out); burst(); });
-    at(2200, () => { shine(); H.classList.remove('is-intro'); });
-    at(2900, finishIntro);
+    // no intro: the page opens straight on the lobby; the logo just shines once it has loaded
+    introDone = true; H.classList.add('is-ready');
+    const imgs = $$('.L'); let n = 0; const go = () => { if (++n >= imgs.length) setTimeout(() => shine(), 500); };
+    imgs.forEach(i => (i.complete ? go() : i.addEventListener('load', go, { once: true })));
   }
 
   /* ---------------- state: HUD, board, dev card, feed ---------------- */
@@ -191,6 +133,15 @@
       if (c.x) { $('#caX').hidden = false; $('#caX').href = c.x; }
       $('#endLinks').innerHTML = `<a class="btn sm" href="https://pump.fun/coin/${esc(c.ca)}" target="_blank" rel="noopener">Buy $DUB</a><a class="btn blue sm" href="https://dexscreener.com/solana/${esc(c.ca)}" target="_blank" rel="noopener">Chart</a>` + (c.x ? `<a class="btn blue sm" href="${esc(c.x)}" target="_blank" rel="noopener">X</a>` : '');
     }
+    // pot flow, season totals, newest players
+    countTo($('#fPot'), s.pot.sol, v => fmtSol(v) + ' SOL');
+    countTo($('#fDubs'), s.dubsToday, v => fmtInt(Math.round(v)));
+    $('#fPer').textContent = fmtSol(s.perDub) + ' SOL'; $('#fDev').textContent = fmtSol(s.devCut) + ' SOL';
+    if (s.totals) {
+      countTo($('#tDubs'), s.totals.dubs, v => fmtInt(Math.round(v))); countTo($('#tPaid'), s.totals.paid, fmtSol);
+      countTo($('#tDays'), s.totals.paydays, v => fmtInt(Math.round(v))); countTo($('#tPlayers'), s.totals.players, v => fmtInt(Math.round(v)));
+    }
+    if (s.newest) $('#joined').innerHTML = s.newest.length ? s.newest.map(p => `<li>${avatar(p.name)}<span>${esc(p.name)}</span><small>${ago(p.at)}</small></li>`).join('') : '<li class="none">Be the first name on the board.</li>';
     firstState = false;
   }
   function emptyBoard(txt) { $('#lbList').innerHTML = ''; $('#lbEmpty').hidden = false; $('#lbEmptyTxt').textContent = txt; }
@@ -222,6 +173,10 @@
     const h = Math.floor(left / 36e5), m = Math.floor(left % 36e5 / 6e4), s = Math.floor(left % 6e4 / 1e3);
     $('#hClock').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
     $('#zoneIn').setAttribute('r', Math.max(2, 18 * left / 864e5).toFixed(2));
+    const done = 1 - left / 864e5, d = new Date(now);
+    $('#dayFill').style.width = (done * 100).toFixed(2) + '%';
+    $('#dayNow').style.left = (done * 100).toFixed(2) + '%';
+    $('#dayNowT').textContent = `${String(d.getUTCHours()).padStart(2, '0')}:${String(d.getUTCMinutes()).padStart(2, '0')}`;
   }
 
   /* ---------------- register: find, lock, prove ---------------- */
