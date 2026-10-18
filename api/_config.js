@@ -9,4 +9,8 @@ module.exports = {
   MODES: ['solo', 'duo', 'trio', 'squad'], // battle royale only, LTMs excluded
   CLAIM_MIN: 30,                           // minutes to finish the "prove it's you" step
   WIN_MIN: 10,                             // a Victory Royale takes at least this many minutes; caps impossible jumps
+  // the arena: 1v1 aim duels for SOL
+  FEE_WALLET: process.env.DUB_FEE_WALLET || '', // where the 5% duel fee goes; empty = the coin's creator wallet
+  DUEL_FEE_PCT: 5,                         // of the pot (both stakes)
+  STAKES: [0.05, 0.1, 0.25, 0.5, 1],       // SOL per side
 };

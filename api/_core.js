@@ -343,4 +343,4 @@ async function me(qs) {
     payouts: pays.map(x => ({ day: x.day instanceof Date ? dayOf(x.day) : String(x.day).slice(0, 10), dubs: x.dubs, paidDubs: x.paid_dubs, dev: x.is_dev, sol: sol(x.lamports), eligible: x.eligible, note: x.note, sig: x.sig })) };
 }
 
-module.exports = { ready, tick, lookup, register, verify, state, boardAll, days, me, fnStats, split, dayOf, keySet };
+module.exports = { ready, tick, lookup, register, verify, state, boardAll, days, me, fnStats, split, dayOf, keySet, creator, meta, setMeta };
