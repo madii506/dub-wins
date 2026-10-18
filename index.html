@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="is-intro is-locked">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -22,25 +22,20 @@
 <link rel="preload" href="/assets/img/logo-u.webp" as="image">
 <link rel="preload" href="/assets/img/logo-b.webp" as="image">
 <link rel="preload" href="/assets/img/logo-crown.webp" as="image">
-<link rel="stylesheet" href="/assets/css/dub.css?v=1">
-<script>
-  (function () {
-    var h = document.documentElement;
-    if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { h.className = 'is-ready'; }
-    setTimeout(function () { if (/is-intro/.test(h.className)) { h.className = 'is-ready'; } }, 6000); // backstop: never stuck in the intro
-  })();
-</script>
+<link rel="stylesheet" href="/assets/css/dub.css?v=2">
 </head>
 <body>
-<div id="bg" aria-hidden="true"><div class="glow"></div><div class="grid"></div><div id="float" class="pre"></div></div>
-<div id="storm" aria-hidden="true"></div><div id="zring" aria-hidden="true"></div>
+<div id="bg" aria-hidden="true"><div class="glow"></div><div class="grid"></div><div id="float"></div></div>
 
 <nav id="nav" aria-label="Sections"><div class="pill">
-  <a href="#board">Board</a><a href="#register">Register</a><a href="#how">How</a><a href="#split">Split</a><a href="#payday">Payday</a><a href="#faq">FAQ</a>
+  <a href="#board">Board</a><a href="#register">Register</a><a href="#how">How</a><a href="#pot">Pot</a><a href="#modes">Modes</a><a href="#payday">Payday</a><a href="#faq">FAQ</a>
 </div></nav>
 
 <header class="hero" id="top">
+  <canvas id="world" aria-hidden="true"></canvas>
+  <div class="sky" aria-hidden="true"></div>
   <h1 class="sr">DUB</h1>
+  <div class="htop">
   <div class="logo" id="logo" role="img" aria-label="DUB">
     <div class="lf">
       <img class="L d" data-k="d" src="/assets/img/logo-d.webp" alt="" style="left:9.375%;top:34.062%;width:30.127%">
@@ -52,7 +47,6 @@
       <img class="L crown" data-k="crown" src="/assets/img/logo-crown.webp" alt="" style="left:11.572%;top:12.109%;width:18.311%">
     </div>
   </div>
-  <p class="tag">Your Fortnite wins, paid in SOL.</p>
   <div class="cta">
     <a class="btn gold" href="#register">Register</a>
     <a class="btn blue" href="#board">Today's board</a>
@@ -60,6 +54,7 @@
   <div class="ca" id="ca" hidden>
     <code id="caCode"></code><button type="button" id="caCopy">Copy</button>
     <a id="caBuy" target="_blank" rel="noopener">Buy</a><a id="caChart" target="_blank" rel="noopener">Chart</a><a id="caX" target="_blank" rel="noopener" hidden>X</a>
+  </div>
   </div>
   <div class="hud" id="hud">
     <div class="tile">
@@ -107,11 +102,14 @@
     <div class="eyebrow rv">02 — Get on the board</div>
     <h2 class="pop rv d1">Register in three steps</h2>
     <div class="reg">
+      <div class="regl">
       <ol class="steps rv d1" id="steps">
         <li class="on" data-s="1"><div>Find you<small>Your Epic name, stats public</small></div></li>
         <li data-s="2"><div>Lock your wallet<small>Where your SOL lands</small></div></li>
         <li data-s="3"><div>Prove it's you<small>One switch, off and on</small></div></li>
       </ol>
+      <div class="joined rv d2"><div class="k">Just joined</div><ul id="joined"><li class="none">Be the first name on the board.</li></ul></div>
+      </div>
       <div class="rv d2" id="panels">
         <div class="card panel" data-p="1">
           <h3>Who are you in Fortnite?</h3>
@@ -170,12 +168,45 @@
       <article class="card hc c4 rv d4"><span class="n">4</span><img src="/assets/img/coin-b.webp" alt=""><h3>Get paid</h3><p>At 00:00 UTC the day's creator fees are split across every dub.</p></article>
     </div>
     <div class="devline rv"><img src="/assets/img/crown-s.webp" alt=""><p><b>Most dubs in 24 hours becomes the dev.</b> The dev takes 25% of the day's pot off the top, plus their share of the other 75% like everyone else.</p></div>
+    <h3 class="sub rv">A day on DUB</h3>
+    <div class="day24 rv">
+      <div class="track"><i class="fill" id="dayFill"></i><span class="now" id="dayNow"><b id="dayNowT">--:--</b> UTC</span></div>
+      <ol class="beats">
+        <li style="--x:0%"><b>00:00</b><span>Lobby opens. Today's board starts at zero.</span></li>
+        <li style="--x:25%"><b>All day</b><span>Play battle royale. We read stats every few minutes.</span></li>
+        <li style="--x:50%"><b>Every win</b><span>A dub lands on the board. The crown can change hands.</span></li>
+        <li style="--x:75%"><b>24:00</b><span>Payday. The pot splits and the list locks.</span></li>
+        <li style="--x:100%"><b>After</b><span>SOL goes out. Each payout links to its transaction.</span></li>
+      </ol>
+    </div>
   </div>
 </section>
 
-<section class="band alt" id="split">
+<section class="band alt" id="pot">
   <div class="wrap">
-    <div class="eyebrow rv">04 — The split</div>
+    <div class="eyebrow rv">04 — The pot</div>
+    <h2 class="pop rv d1">Where the SOL comes from</h2>
+    <div class="flow">
+      <div class="node rv d1"><img src="/assets/img/coin-b.webp" alt=""><b>Every $DUB trade</b><span>pays a creator fee on pump.fun</span></div>
+      <i class="arrow rv d1"></i>
+      <div class="node rv d2"><img src="/assets/img/crown-s.webp" alt=""><b>The creator vault</b><span>fills up on-chain, all day</span></div>
+      <i class="arrow rv d2"></i>
+      <div class="node hot rv d3"><img src="/assets/img/w-gold.webp" alt=""><b>Today's pot</b><span class="big" id="fPot">0.0000 SOL</span><span>read live from the vault</span></div>
+      <i class="arrow rv d3"></i>
+      <div class="node rv d4"><img src="/assets/img/star-gold.webp" alt=""><b>Split at 00:00 UTC</b><span><em>25%</em> to the dev · <em>75%</em> per dub</span></div>
+    </div>
+    <div class="live3 rv">
+      <div><span class="k">Dubs today</span><b id="fDubs">0</b></div>
+      <div><span class="k">One dub is worth now</span><b id="fPer">0.0000 SOL</b></div>
+      <div><span class="k">Dev cut now</span><b id="fDev">0.0000 SOL</b></div>
+    </div>
+    <p class="note rv">Fees from trades during the day go into that day's pot. If nobody wins that day, the pot rolls into the next one.</p>
+  </div>
+</section>
+
+<section class="band" id="split">
+  <div class="wrap">
+    <div class="eyebrow rv">05 — The split</div>
     <h2 class="pop rv d1">What's a dub worth?</h2>
     <div class="calc">
       <div class="card sliders rv d1">
@@ -198,10 +229,30 @@
   </div>
 </section>
 
+<section class="band alt" id="modes">
+  <div class="wrap">
+    <div class="eyebrow rv">06 — Modes</div>
+    <h2 class="pop rv d1">What counts as a dub</h2>
+    <div class="modes">
+      <div class="mode rv d1"><div class="ppl"><i></i></div><b>Solo</b><span>Last one standing</span><em>Counts</em></div>
+      <div class="mode rv d2"><div class="ppl"><i></i><i></i></div><b>Duos</b><span>Win with a partner</span><em>Counts</em></div>
+      <div class="mode rv d3"><div class="ppl"><i></i><i></i><i></i></div><b>Trios</b><span>Three-stack</span><em>Counts</em></div>
+      <div class="mode rv d4"><div class="ppl"><i></i><i></i><i></i><i></i></div><b>Squads</b><span>Full squad</span><em>Counts</em></div>
+    </div>
+    <div class="nope rv"><span class="k">Doesn't count</span><span class="chip">Limited-time modes</span><span class="chip">Creative maps</span><span class="chip">Wins before you registered</span><span class="chip">Wins while your stats were private too long</span></div>
+  </div>
+</section>
+
 <section class="band" id="payday">
   <div class="wrap">
-    <div class="eyebrow rv">05 — Payday</div>
+    <div class="eyebrow rv">07 — Payday</div>
     <h2 class="pop rv d1">Every payout, on the record</h2>
+    <div class="season rv d1">
+      <div><b id="tDubs">0</b><span class="k">Dubs, all time</span></div>
+      <div><b id="tPaid">0.0000</b><span class="k">SOL paid out</span></div>
+      <div><b id="tDays">0</b><span class="k">Paydays</span></div>
+      <div><b id="tPlayers">0</b><span class="k">Players</span></div>
+    </div>
     <div class="pd">
       <div class="card lookup rv d1">
         <h3>Check your status</h3>
@@ -219,8 +270,8 @@
 
 <section class="band alt" id="rules">
   <div class="wrap">
-    <div class="eyebrow rv">06 — Rules</div>
-    <h2 class="pop rv d1">The fine print, in big letters</h2>
+    <div class="eyebrow rv">08 — Fair play</div>
+    <h2 class="pop rv d1">Fair play, in big letters</h2>
     <div class="rules">
       <div class="rule rv d1"><b>Stats public</b><p>We read your wins from your public career stats. Private stats can't be read, so they can't be paid.</p></div>
       <div class="rule rv d2"><b>Battle royale only</b><p>Solo, Duos, Trios and Squads count. Limited-time modes and Creative don't.</p></div>
@@ -236,7 +287,7 @@
 
 <section class="band" id="faq">
   <div class="wrap">
-    <div class="eyebrow rv">07 — FAQ</div>
+    <div class="eyebrow rv">09 — FAQ</div>
     <h2 class="pop rv d1">Questions</h2>
     <div class="faq">
       <details class="qa rv"><summary>How do you know I won?</summary><div class="a"><p>Fortnite keeps public career stats for every account. Every few minutes we read your battle royale wins through Fortnite-API. When the number goes up, that's a dub.</p></div></details>
@@ -246,6 +297,10 @@
       <details class="qa rv"><summary>What is "the dev"?</summary><div class="a"><p>The player with the most dubs that day. Ties go to whoever got there first. The dev takes 25% of the pot on top of their dubs, and the crown on the board.</p></div></details>
       <details class="qa rv"><summary>Do wins from before I registered count?</summary><div class="a"><p>No. We note your win count the moment you finish registering. Only Victory Royales after that count.</p></div></details>
       <details class="qa rv"><summary>I play duos with a friend. Who gets the dub?</summary><div class="a"><p>Both of you, if you're both registered. Every registered player whose stats show the win gets their own dub.</p></div></details>
+      <details class="qa rv"><summary>What's a creator fee?</summary><div class="a"><p>On pump.fun every trade of a coin pays a small fee to the coin's creator wallet. For $DUB, those fees are the pot. We read the vault on-chain, so the pot on this page is the real number.</p></div></details>
+      <details class="qa rv"><summary>Can I register more than one account?</summary><div class="a"><p>One wallet per Epic account and one Epic account per wallet. Every account has to pass the privacy switch, so you can't claim someone else's.</p></div></details>
+      <details class="qa rv"><summary>What if my stats go private later?</summary><div class="a"><p>We can't read private stats, so nothing is counted while they're off. Switch them back on and we pick up again. Wins from the dark stretch only count as fast as matches could really be played.</p></div></details>
+      <details class="qa rv"><summary>How fast do dubs show up?</summary><div class="a"><p>Usually within a few minutes. Fortnite updates your career stats after each match, and we read active players every couple of minutes.</p></div></details>
       <details class="qa rv"><summary>Is DUB made by Epic Games?</summary><div class="a"><p>No. DUB is an independent fan project. It isn't affiliated with or endorsed by Epic Games. Fortnite is a trademark of Epic Games.</p></div></details>
     </div>
   </div>
@@ -258,6 +313,7 @@
 </footer>
 
 <div id="toast" aria-live="polite"></div>
-<script src="/assets/js/dub.js?v=1" defer></script>
+<script src="/assets/js/dub.js?v=2" defer></script>
+<script type="module" src="/assets/js/world.js?v=2"></script>
 </body>
 </html>
