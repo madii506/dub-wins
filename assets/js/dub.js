@@ -77,7 +77,7 @@
     const dn = $('#devName');
     if (s.dev) { dn.textContent = s.dev.name; dn.classList.remove('empty'); countTo($('#devDubs'), s.dev.dubs, v => fmtInt(Math.round(v))); countTo($('#devEst'), s.dev.est, fmtSol); }
     else { dn.textContent = 'The crown is open'; dn.classList.add('empty'); $('#devDubs').textContent = '0'; $('#devEst').textContent = '0'; }
-    if (s.config) { $('#devNote').textContent = `Most dubs before 00:00 UTC takes the dev cut, ${s.config.devPct}% of the day's pot, on top of their dubs.`; $$('.mh').forEach(e => (e.textContent = fmtInt(s.config.minHold))); $('#minHold').textContent = fmtInt(s.config.minHold); }
+    if (s.config) {  $$('.mh').forEach(e => (e.textContent = fmtInt(s.config.minHold))); $('#minHold').textContent = fmtInt(s.config.minHold); }
     if (tab === 'today') renderBoard(s.board.map(r => ({ k: r.name, rank: r.rank, name: r.name, dubs: r.dubs, val: fmtSol(r.est), top: r.rank === 1 })), 'today');
     W('setBoard', s.board.slice(0, 5).map(r => ({ name: r.name, dubs: r.dubs })));
     W('setPot', s.pot.sol);

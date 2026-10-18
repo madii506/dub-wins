@@ -96,7 +96,7 @@ function start() {
   for (const d of [290, 155, 115, 35, 0]) { const p = at(d, 12.5); isl.add(new THREE.BoxGeometry(1.8, .09, 10.8), 0xe2b277, M(V(p.x, .83, p.z), [0, d * Math.PI / 180, 0]), 0); }
   // trees + rocks, away from the stops
   const STOPS = [290, 252, 236, 220, 204, 155, 115, 75, 35, 0, 325];
-  const nearStop = d => STOPS.some(s => Math.abs(((d - s + 540) % 360) - 180) < 11);
+  const nearStop = d => STOPS.some(s => Math.abs(((d - s + 540) % 360) - 180) < 15);
   function tree(b, p, s) {
     b.add(new THREE.CylinderGeometry(.25 * s, .38 * s, 1.8 * s, 7), 0x7a4b2a, M(V(p.x, .8 + .9 * s, p.z)), 1.1);
     b.add(new THREE.IcosahedronGeometry(1.35 * s, 0), 0x2fbf5d, M(V(p.x, .8 + 2.4 * s, p.z), [rnd(), rnd(), 0]), 1.07);
@@ -337,21 +337,22 @@ function start() {
   const KEYS = {
     top: () => ({ cam: V(0, 30, 74), look: V(0, 1, 0) }),
     board: () => ({ cam: V(6.5, 10, 16), look: V(0, 7, -5) }),
-    register: () => { const k = outside(LOCK, 15, 4.8, -3); k.look.y = 4.2; return k; },
-    how: t => { const p = at(255 - 55 * t, 21.6); const k = outside(p, 15, 5, 0); k.look.y = 4.2; return k; },
+    register: () => { const k = outside(LOCK, 15, 6.4, -3); k.look.y = 4.4; return k; },
+    how: t => { const p = at(255 - 55 * t, 21.6); const k = outside(p, 15, 6.4, 0); k.look.y = 4.4; return k; },
     modes: () => { const k = outside(MODES, 21, 8, 0); k.look.y = 3; return k; },
     pot: () => { const k = outside(POT, 17, 6.5, 2); k.look.y = 4.5; return k; },
     split: () => { const k = outside(SPL, 18, 7.5, -1.5); k.look.y = 3.5; return k; },
     payday: () => { const k = outside(PAY, 19, 8.5, 2); k.look.y = 4.2; return k; },
     rules: () => { const k = outside(TOW, 21, 9, -3); k.look.y = 6.5; return k; },
-    faq: () => { const k = outside(FIRE, 15, 6, 2); k.look.y = 2.8; return k; },
+    faq: () => { const k = outside(FIRE, 15, 7.5, 2); k.look.y = 2.8; return k; },
   };
   let stops = [];
   function measure() {
     stops = [...document.querySelectorAll('[data-poi]')].map(el => { const r = el.getBoundingClientRect(); return { key: el.dataset.poi, top: r.top + scrollY, h: Math.max(1, r.height) }; }).filter(s => KEYS[s.key]);
   }
   const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-  const want = { cam: V(0, 30, 74), look: V(0, 1, 0) }, cur = { cam: V(0, 30, 74), look: V(0, 1, 0) };
+  const want = { cam: V(0, 30, 74), look: V(0, 1, 0) }, cur = { cam: V(0, 30, 74), look: V(0, 1, 0) }, cyl = { a: 0, r: 74, h: 30 };
+  const syncCyl = () => { cyl.a = Math.atan2(want.cam.x, want.cam.z); cyl.r = Math.hypot(want.cam.x, want.cam.z); cyl.h = want.cam.y; };
   let stopIndex = 0;
   function desired() {
     if (!stops.length) return;
@@ -408,7 +409,13 @@ function start() {
     const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = Math.max(last, now); t += dt;
     desired();
     const k = snapNext ? 1 : 1 - Math.exp(-dt * 2.6); snapNext = false;
-    cur.cam.lerp(want.cam, k); cur.look.lerp(want.look, k);
+    // travel around the island, not through it: damp the camera in cylindrical coordinates and climb while far away
+    { const wa = Math.atan2(want.cam.x, want.cam.z), wr = Math.hypot(want.cam.x, want.cam.z);
+      let da = wa - cyl.a; da = ((da + Math.PI) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2) - Math.PI;
+      cyl.a += da * k; cyl.r += (wr - cyl.r) * k; cyl.h += (want.cam.y - cyl.h) * k;
+      const far = Math.min(1, Math.abs(da) / 1.1), rr = Math.max(cyl.r, cyl.r + (36 - cyl.r) * far);
+      cur.cam.set(Math.sin(cyl.a) * rr, cyl.h + far * 14, Math.cos(cyl.a) * rr); }
+    cur.look.lerp(want.look, k);
     if (!dragging) { yaw *= Math.exp(-dt * 1.6); pitch *= Math.exp(-dt * 1.6); }
     tmp.subVectors(cur.cam, cur.look); tmp.applyAxisAngle(UP, yaw + px * .12);
     const len = tmp.length(), hd = Math.atan2(tmp.x, tmp.z), el = Math.max(-.2, Math.min(1.35, Math.atan2(tmp.y, Math.hypot(tmp.x, tmp.z)) + pitch - py * .05));
@@ -452,13 +459,13 @@ function start() {
   API.setPot = sol => { redraw(potTex, x => potSign(x, sol, 768, 240)); rainRate = .2 + Math.min(1.6, Math.log10(1 + (Number(sol) || 0) * 10) * .6); };
   API.setSplit = ({ dev = .25, rest = .7, yours = .05 } = {}) => { const k = 7; stacks[0].target = Math.max(.15, dev * k); stacks[1].target = Math.max(.15, rest * k); stacks[2].target = Math.max(.15, yours * k * 3); };
   API.setPaydays = n => landed.forEach((c, i) => (c.visible = i < Math.min(6, n | 0)));
-  API.snap = () => { measure(); desired(); cur.cam.copy(want.cam); cur.look.copy(want.look); snapNext = snapNext2 = true; if (!running) frame(performance.now()); };
+  API.snap = () => { measure(); desired(); cur.cam.copy(want.cam); cur.look.copy(want.look); syncCyl(); snapNext = snapNext2 = true; if (!running) frame(performance.now()); };
   API.hop = i => { if (i >= 0 && i < 4) hopT[i] = 0; };
   API.measure = measure;
   API.ready = true;
   // fonts arrive after the first paint; redraw every sign once Lilita is in
   if (document.fonts && document.fonts.load) document.fonts.load('64px Lilita').then(() => texts.forEach(tx => redraw(tx))).catch(() => {});
-  measure(); desired(); cur.cam.copy(want.cam); cur.look.copy(want.look);
+  measure(); desired(); cur.cam.copy(want.cam); cur.look.copy(want.look); syncCyl();
   if (RM) { frame(performance.now()); addEventListener('scroll', () => requestAnimationFrame(frame), { passive: true }); }
   else play();
   cv.classList.add('on');
