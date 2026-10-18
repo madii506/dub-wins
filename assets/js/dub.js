@@ -25,44 +25,10 @@
   }
   const IMG = n => `/assets/img/${n}.webp`;
 
-  /* ---------------- living background: candy pieces drifting with scroll + pointer ---------------- */
-  const FLOAT = [
-    // [image, x%, y%, size px, depth, far] — sharp pieces hug the edges, soft ones sit just inside them
-    ['w-gold', 6, 17, 116, .9], ['coin-b', 92, 12, 92, .8], ['star-gold', 10, 63, 84, .7], ['d-sky', 92, 57, 104, .85],
-    ['pill-gold', 4, 88, 74, .6], ['crown-s', 88, 87, 100, .75], ['u-purple', 15, 37, 72, .5], ['star-white', 85, 33, 66, .55],
-    ['b-gold', 96, 36, 72, .65], ['pill-white', 5, 44, 62, .45], ['gg-purple', 84, 71, 88, .7], ['pill-sky', 16, 80, 60, .5],
-    ['coin-b-far', 20, 8, 64, .25, 1], ['star-gold-far', 80, 6, 60, .22, 1], ['pill-white-far', 22, 93, 56, .3, 1], ['pill-sky-far', 78, 92, 54, .28, 1],
-    ['w-gold-far', 21, 56, 62, .3, 1], ['crown-s-far', 79, 49, 64, .26, 1], ['pill-purple-far', 24, 27, 52, .2, 1], ['d-sky-far', 76, 21, 60, .24, 1],
-  ];
-  const floatEls = [];
-  function buildFloat() {
-    const box = $('#float'); if (!box) return;
-    const small = innerWidth < 640;
-    FLOAT.forEach((f, i) => {
-      if (small && i % 2 === 1 && !f[5]) return;
-      const [src, x, y, size, depth, far] = f;
-      const el = document.createElement('div'); el.className = 'fl' + (far ? ' far' : '');
-      const sz = Math.round(size * (small ? .62 : innerWidth < 1100 ? .8 : 1));
-      el.style.cssText = `left:${x}%;top:0;width:${sz}px;margin-left:${-sz / 2}px`;
-      el.innerHTML = `<span class="bx" style="display:block"><img src="${IMG(src)}" alt="" style="--d:${(5 + (i % 5) * 1.1).toFixed(1)}s;--dl:${(-i * .7).toFixed(1)}s;--rt:${4 + (i % 4) * 2}deg"></span>`;
-      box.appendChild(el);
-      floatEls.push({ el, bx: el.firstChild, y, depth, far: !!far, sz });
-    });
-  }
-  let px = 0, py = 0, tx = 0, ty = 0, rafOn = false;
-  function placeFloat() {
-    const vh = innerHeight, span = vh + 260, sy = scrollY;
-    tx += (px - tx) * .06; ty += (py - ty) * .06;
-    for (const f of floatEls) {
-      let y = (f.y / 100) * vh - sy * f.depth * .22;
-      y = ((y + 130) % span + span) % span - 130;
-      f.el.style.transform = `translate3d(${(tx * f.depth * 26).toFixed(1)}px,${(y + ty * f.depth * 18).toFixed(1)}px,0)`;
-    }
-  }
-  function loop() { placeFloat(); if (!document.hidden) requestAnimationFrame(loop); else rafOn = false; }
-  function startLoop() { if (!rafOn && !RM) { rafOn = true; requestAnimationFrame(loop); } }
-  addEventListener('pointermove', e => { px = e.clientX / innerWidth - .5; py = e.clientY / innerHeight - .5; }, { passive: true });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) startLoop(); });
+  /* ---------------- the 3D world bridge (world.js loads as a module, maybe after this file) ---------------- */
+  const pending = [];
+  const W = (fn, ...args) => { const w = window.DUBW; if (w && w.ready && typeof w[fn] === 'function') { try { w[fn](...args); } catch {} } else pending.push([fn, args]); };
+  addEventListener('dubw:ready', () => { while (pending.length) { const [fn, args] = pending.shift(); W(fn, ...args); } });
 
   /* ---------------- the logo's gloss sweep ---------------- */
   let introDone = false;
@@ -113,6 +79,9 @@
     else { dn.textContent = 'The crown is open'; dn.classList.add('empty'); $('#devDubs').textContent = '0'; $('#devEst').textContent = '0'; }
     if (s.config) { $('#devNote').textContent = `Most dubs before 00:00 UTC takes the dev cut, ${s.config.devPct}% of the day's pot, on top of their dubs.`; $$('.mh').forEach(e => (e.textContent = fmtInt(s.config.minHold))); $('#minHold').textContent = fmtInt(s.config.minHold); }
     if (tab === 'today') renderBoard(s.board.map(r => ({ k: r.name, rank: r.rank, name: r.name, dubs: r.dubs, val: fmtSol(r.est), top: r.rank === 1 })), 'today');
+    W('setBoard', s.board.slice(0, 5).map(r => ({ name: r.name, dubs: r.dubs })));
+    W('setPot', s.pot.sol);
+    if (s.totals) W('setPaydays', s.totals.paydays);
     // feed + toasts for new dubs
     const feed = s.feed || [];
     if (feed.length) {
@@ -172,6 +141,7 @@
     let left = end - now; if (left < 0) { left = 0; if (S && now - Date.parse(S.closesAt) > 5000) { S.closesAt = new Date(Math.ceil((now + 1) / 864e5) * 864e5).toISOString(); loadState(); } }
     const h = Math.floor(left / 36e5), m = Math.floor(left % 36e5 / 6e4), s = Math.floor(left % 6e4 / 1e3);
     $('#hClock').textContent = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+    $('#mClock').textContent = $('#hClock').textContent;
     $('#zoneIn').setAttribute('r', Math.max(2, 18 * left / 864e5).toFixed(2));
     const done = 1 - left / 864e5, d = new Date(now);
     $('#dayFill').style.width = (done * 100).toFixed(2) + '%';
@@ -187,7 +157,7 @@
   }
   const out = (id, msg, kind) => { const o = $(id); o.className = 'out' + (kind ? ' ' + kind : ''); o.textContent = msg || ''; };
   function busy(btn, on, label) { btn.disabled = on; if (on) { btn.dataset.l = btn.textContent; btn.textContent = label; } else if (btn.dataset.l) btn.textContent = btn.dataset.l; }
-  $$('#rPlat button').forEach(b => b.addEventListener('click', () => { R.plat = b.dataset.v; $$('#rPlat button').forEach(x => x.classList.toggle('on', x === b)); }));
+  $$('#rPlat button').forEach(b => b.addEventListener('click', () => { R.plat = b.dataset.v; $$('#rPlat button').forEach(x => x.classList.toggle('on', x === b)); W('setHood', R.plat); }));
   async function find() {
     const name = $('#rName').value.trim();
     if (name.length < 3) return out('#o1', 'Type your Epic display name (at least 3 characters).', 'err');
@@ -241,6 +211,7 @@
   }
   function finished(p) {
     clearInterval(R.timer); clearTimeout(R.poll); store.del('dub.claim'); R.claim = null;
+    if (p) W('setName', p.name); W('emote');
     step(4); $$('#steps li').forEach(li => { li.classList.add('ok'); li.classList.remove('on'); });
     $('#doneTxt').innerHTML = p ? `<b>${esc(p.name)}</b> is on the board, paid to <b>${esc(p.short)}</b>. We start counting from your ${fmtInt(p.base)} wins. Your next Victory Royale is a dub.` : 'You are on the board. Your next Victory Royale is a dub.';
     toast(`<img src="${IMG('crown-s')}" alt=""><div><span>YOU'RE IN</span><br>Go get a dub.</div>`);
@@ -273,6 +244,7 @@
     $('#lPer').textContent = fmtSol(per) + ' SOL'; $('#lMine').textContent = `${mine} × ${fmtSol(per)} = ${fmtSol(yours)} SOL`;
     $('#bD').style.width = (pct * 100) + '%'; $('#bY').style.width = (yours / pot * 100) + '%'; $('#bP').style.width = Math.max(0, 100 - pct * 100 - yours / pot * 100) + '%';
     $$('#split input[type=range]').forEach(r => r.style.setProperty('--p', ((r.value - r.min) / (r.max - r.min) * 100) + '%'));
+    W('setSplit', { dev: pct, rest: Math.max(0, (pot - devCut - yours) / pot), yours: yours / pot });
   }
 
   /* ---------------- payday: history + status ---------------- */
@@ -318,22 +290,41 @@
     els.forEach(e => io.observe(e));
   }
   function sweep() { const vh = innerHeight; $$('.rv:not(.vis)').forEach(e => { if (e.getBoundingClientRect().top < vh * .98) e.classList.add('vis'); }); }
-  const links = $$('#nav a').filter(a => a.getAttribute('href').startsWith('#'));
+  const slots = $$('.slots button');
+  const stopsEls = () => $$('[data-poi]');
   function spy() {
-    let cur = null; for (const a of links) { const s = $(a.getAttribute('href')); if (s && s.getBoundingClientRect().top < 140) cur = a; }
-    links.forEach(a => a.classList.toggle('on', a === cur));
+    const y = innerHeight * .45; let cur = null;
+    for (const el of stopsEls()) if (el.getBoundingClientRect().top <= y) cur = el;
+    const key = cur ? cur.dataset.poi : 'top';
+    slots.forEach(b => b.classList.toggle('on', b.dataset.to === key));
+    $('#dockLabel').textContent = key === 'top' ? 'Lobby' : (cur.dataset.name || key);
+    document.documentElement.classList.toggle('in-stop', key !== 'top');
+    // the path: light the step the camera is walking past
+    const how = $('#how'), r = how.getBoundingClientRect(), t = Math.min(1, Math.max(0, (y - r.top) / r.height)) / .7;
+    $$('#walk li').forEach((li, i) => { const on = key === 'how' && Math.min(3, Math.floor(t * 4)) === i; li.classList.toggle('on', on); li.classList.toggle('done', key === 'how' && i < Math.floor(t * 4) && !on); });
   }
+  function go(key) { const el = key === 'top' ? $('#top') : document.querySelector(`[data-poi="${key}"]`); if (el) el.scrollIntoView({ behavior: RM ? 'auto' : 'smooth' }); }
+  slots.forEach(b => b.addEventListener('click', () => go(b.dataset.to)));
+  addEventListener('keydown', e => {
+    if (e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
+    if (e.metaKey || e.ctrlKey || e.altKey) return;
+    const n = Number(e.key); if (n >= 1 && n <= 9 && slots[n - 1]) { go(slots[n - 1].dataset.to); e.preventDefault(); }
+    if (e.key === '0') go('top');
+    if (e.key === 'e' || e.key === 'E') W('emote');
+  });
   let st = 0; addEventListener('scroll', () => { if (st) return; st = requestAnimationFrame(() => { st = 0; spy(); sweep(); }); }, { passive: true });
   addEventListener('hashchange', () => setTimeout(sweep, 400));
 
   /* ---------------- wire up ---------------- */
   function init() {
-    buildFloat(); placeFloat(); startLoop();
     intro();
     reveal(); spy();
     $$('.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.r)));
     $('#rFind').addEventListener('click', find);
     $('#rName').addEventListener('keydown', e => { if (e.key === 'Enter') find(); });
+    $('#rName').addEventListener('input', e => W('setName', e.target.value.trim()));
+    $('#emote').addEventListener('click', () => W('emote'));
+    $$('.mode').forEach(m => m.addEventListener('click', () => { $$('.mode').forEach(x => x.classList.toggle('on', x === m)); W('hop', Number(m.dataset.m)); }));
     $('#rLock').addEventListener('click', lock);
     $('#rWallet').addEventListener('keydown', e => { if (e.key === 'Enter') lock(); });
     $('#rBack').addEventListener('click', () => { step(1); out('#o2', ''); });
