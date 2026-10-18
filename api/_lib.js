@@ -79,14 +79,21 @@ async function accounts(addrs) {
 
 // ---------- Postgres: Neon on Vercel, PGlite in local dev ----------
 let pg = null;
+// Neon's Vercel integration names the variable after the prefix chosen when connecting (DATABASE_URL, STORAGE_URL, ...).
+function dbUrl() {
+  const e = process.env;
+  for (const k of ['DATABASE_URL', 'POSTGRES_URL', 'STORAGE_URL']) if (e[k]) return e[k];
+  for (const [k, v] of Object.entries(e)) if (/_URL$/.test(k) && !/UNPOOLED|NON_POOLING|NO_SSL/.test(k) && /^postgres(ql)?:\/\//.test(v || '')) return v;
+  return '';
+}
 async function q(text, params = []) {
   if (process.env.D_PGLITE) {
     if (!pg) { const { PGlite } = require(process.env.D_PGLITE_MOD || '@electric-sql/pglite'); pg = new PGlite(); }
     return (await pg.query(text, params)).rows;
   }
-  if (!pg) { const { neon } = require('@neondatabase/serverless'); pg = neon(process.env.DATABASE_URL || process.env.POSTGRES_URL); }
+  if (!pg) { const { neon } = require('@neondatabase/serverless'); pg = neon(dbUrl()); }
   return pg.query(text, params);
 }
-const dbReady = () => !!(process.env.D_PGLITE || process.env.DATABASE_URL || process.env.POSTGRES_URL);
+const dbReady = () => !!(process.env.D_PGLITE || dbUrl());
 
 module.exports = { UA, SOL, MOCK, send, CACHE, query, body, ip, limited, getJson, rpc, b58enc, b58dec, isAddr, pda, PUMP, PUMP_AMM, TOKEN, bondingCurveOf, ataOf, creatorVaultOf, ammVaultOf, RENT0, accounts, q, dbReady };

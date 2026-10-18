@@ -274,12 +274,15 @@ function pubClaim(c) { return { id: c.id, name: c.name, platform: c.platform, wa
 async function state() {
   await ready();
   const now = Date.now(), today = dayOf(now), start = dayStart(today), end = start + 86400000;
-  const [board, pot, players, feed, tickOk, last] = await Promise.all([
+  const [board, pot, players, feed, tickOk, last, tot, newest] = await Promise.all([
     dayBoard(today), potOf(today),
     L.q(`SELECT COUNT(*)::int AS n FROM dub_players`),
     L.q(`SELECT e.n, e.at, p.name FROM dub_events e JOIN dub_players p ON p.id = e.player_id ORDER BY e.id DESC LIMIT 24`),
     meta('tick_ok'),
     L.q(`SELECT * FROM dub_days ORDER BY day DESC LIMIT 1`),
+    L.q(`SELECT (SELECT COALESCE(SUM(n),0) FROM dub_events)::int AS dubs, (SELECT COALESCE(SUM(lamports),0) FROM dub_payouts WHERE sig IS NOT NULL)::bigint AS paid,
+      (SELECT COUNT(*) FROM dub_days WHERE paid_dubs > 0)::int AS paydays`),
+    L.q(`SELECT name, created_at FROM dub_players ORDER BY id DESC LIMIT 8`),
   ]);
   const rows = board.map(r => ({ ...r, eligible: true }));
   const s = split(pot, rows);
@@ -295,6 +298,8 @@ async function state() {
     lastDay: last[0] ? { day: String(last[0].day instanceof Date ? dayOf(last[0].day) : last[0].day).slice(0, 10), pot: sol(last[0].pot), dubs: last[0].dubs, dev: last[0].dev_name } : null,
     config: { ca: C.CA, x: C.X, devPct: C.DEV_PCT, cap: C.CAP, minHold: C.MIN_HOLD, modes: C.MODES, claimMin: C.CLAIM_MIN },
     tracker: { key: keySet(), lastTick: tickOk ? iso(Number(tickOk)) : null },
+    totals: { dubs: tot[0].dubs, paid: sol(tot[0].paid), paydays: tot[0].paydays, players: players[0].n },
+    newest: newest.map(p => ({ name: p.name, at: iso(p.created_at) })),
   };
 }
 async function boardAll() {
