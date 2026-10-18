@@ -4,22 +4,22 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>DUB</title>
-<meta name="description" content="Your Fortnite wins, paid in SOL. Register your Epic name, win battle royale, and every Victory Royale earns a share of $DUB's creator fees. Most dubs in 24h becomes the dev.">
+<meta name="description" content="1v1 block-run duels for SOL, winner paid the second the run ends. Plus your Fortnite wins, paid in SOL: every Victory Royale earns a share of $DUB's creator fees, and most dubs in 24h becomes the dev.">
 <meta name="theme-color" content="#2a66f2">
 <meta property="og:type" content="website">
 <meta property="og:title" content="DUB">
-<meta property="og:description" content="Your Fortnite wins, paid in SOL. Most dubs in 24h becomes the dev.">
+<meta property="og:description" content="1v1 block-run duels for SOL, paid the second the run ends. Your Fortnite wins, paid in SOL.">
 <meta property="og:image" content="https://dub-wins.vercel.app/assets/img/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="DUB">
-<meta name="twitter:description" content="Your Fortnite wins, paid in SOL.">
+<meta name="twitter:description" content="1v1 me for SOL. Block-run duels paid the second the run ends, plus your Fortnite wins, paid in SOL.">
 <meta name="twitter:image" content="https://dub-wins.vercel.app/assets/img/og.jpg">
 <link rel="icon" type="image/png" sizes="32x32" href="/assets/img/favicon-32.png">
 <link rel="icon" type="image/png" sizes="64x64" href="/assets/img/favicon-64.png">
 <link rel="apple-touch-icon" href="/assets/img/favicon-180.png">
 <link rel="preload" href="/assets/fonts/lilita.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="modulepreload" href="/assets/js/vendor/three.module.min.js">
-<link rel="stylesheet" href="/assets/css/dub.css?v=4">
+<link rel="stylesheet" href="/assets/css/dub.css?v=7">
 </head>
 <body>
 <div class="sky" aria-hidden="true"></div>
@@ -33,15 +33,16 @@
 <nav class="dock" id="dock" aria-label="Sections">
   <div class="dock-label" id="dockLabel">Lobby</div>
   <div class="slots">
-    <button type="button" data-to="board" title="The board (1)"><img src="/assets/img/crown-s.webp" alt=""><i>1</i></button>
-    <button type="button" data-to="register" title="Register (2)"><img src="/assets/img/d-white.webp" alt=""><i>2</i></button>
-    <button type="button" data-to="how" title="How it works (3)"><img src="/assets/img/w-white.webp" alt=""><i>3</i></button>
-    <button type="button" data-to="modes" title="Modes (4)"><img src="/assets/img/gg-purple.webp" alt=""><i>4</i></button>
-    <button type="button" data-to="pot" title="The pot (5)"><img src="/assets/img/coin-b.webp" alt=""><i>5</i></button>
-    <button type="button" data-to="split" title="The split (6)"><img src="/assets/img/star-gold.webp" alt=""><i>6</i></button>
-    <button type="button" data-to="payday" title="Payday (7)"><img src="/assets/img/w-gold.webp" alt=""><i>7</i></button>
-    <button type="button" data-to="rules" title="Fair play (8)"><img src="/assets/img/star-white.webp" alt=""><i>8</i></button>
-    <button type="button" data-to="faq" title="FAQ (9)"><img src="/assets/img/u-purple.webp" alt=""><i>9</i></button>
+    <button type="button" data-to="arena" title="The arena (1)"><svg class="xh" viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h22l11 13-22 23L2 20z" fill="#6ee6ff" stroke="#13256e" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 20h44M13 7l6 13 5-13 5 13 6-13M19 20l5 23 5-23" fill="none" stroke="#13256e" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 10h4l-3 7-4-5z" fill="#fff"/><path d="M29 22h11L27 36z" fill="#2bb8e0"/></svg><i>1</i></button>
+    <button type="button" data-to="board" title="The board (2)"><img src="/assets/img/crown-s.webp" alt=""><i>2</i></button>
+    <button type="button" data-to="register" title="Register (3)"><img src="/assets/img/d-white.webp" alt=""><i>3</i></button>
+    <button type="button" data-to="how" title="How it works (4)"><img src="/assets/img/w-white.webp" alt=""><i>4</i></button>
+    <button type="button" data-to="modes" title="Modes (5)"><img src="/assets/img/gg-purple.webp" alt=""><i>5</i></button>
+    <button type="button" data-to="pot" title="The pot (6)"><img src="/assets/img/coin-b.webp" alt=""><i>6</i></button>
+    <button type="button" data-to="split" title="The split (7)"><img src="/assets/img/star-gold.webp" alt=""><i>7</i></button>
+    <button type="button" data-to="payday" title="Payday (8)"><img src="/assets/img/w-gold.webp" alt=""><i>8</i></button>
+    <button type="button" data-to="rules" title="Fair play (9)"><img src="/assets/img/star-white.webp" alt=""><i>9</i></button>
+    <button type="button" data-to="faq" title="FAQ (0)"><img src="/assets/img/u-purple.webp" alt=""><i>0</i></button>
   </div>
 </nav>
 
@@ -60,8 +61,8 @@
       </div>
     </div>
     <div class="cta">
-      <a class="btn gold" href="#register">Register</a>
-      <a class="btn navy" href="#board">Today's board</a>
+      <a class="btn gold" href="#arena"><svg class="xh" viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h22l11 13-22 23L2 20z" fill="#6ee6ff" stroke="#13256e" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 20h44M13 7l6 13 5-13 5 13 6-13M19 20l5 23 5-23" fill="none" stroke="#13256e" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 10h4l-3 7-4-5z" fill="#fff"/><path d="M29 22h11L27 36z" fill="#2bb8e0"/></svg>Enter the arena</a>
+      <a class="btn navy" href="#register">Register</a>
     </div>
     <div class="ca" id="ca" hidden>
       <code id="caCode"></code><button type="button" id="caCopy">Copy</button>
@@ -69,22 +70,57 @@
     </div>
   </div>
   <div class="hud" id="hud">
+    <a class="tile hot" href="#arena"><svg class="xh" viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h22l11 13-22 23L2 20z" fill="#6ee6ff" stroke="#13256e" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 20h44M13 7l6 13 5-13 5 13 6-13M19 20l5 23 5-23" fill="none" stroke="#13256e" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 10h4l-3 7-4-5z" fill="#fff"/><path d="M29 22h11L27 36z" fill="#2bb8e0"/></svg><div><div class="k">Open duels</div><div class="v" id="hOpen"><span class="skel"></span></div></div></a>
+    <a class="tile" href="#arena"><img src="/assets/img/crown-s.webp" alt=""><div><div class="k">Won in duels</div><div class="v"><span id="hWon"><span class="skel"></span></span><small class="u"> SOL</small></div></div></a>
     <div class="tile">
       <svg class="zone" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="18" fill="rgba(143,92,255,.45)" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/><circle id="zoneIn" cx="20" cy="20" r="18" fill="rgba(42,102,242,.95)" stroke="#fff" stroke-width="2"/></svg>
       <div><div class="k">Payday in</div><div class="v" id="hClock"><span class="skel"></span></div></div>
     </div>
     <div class="tile"><img src="/assets/img/coin-b.webp" alt=""><div><div class="k">Today's pot</div><div class="v"><span id="hPot"><span class="skel"></span></span><small class="u"> SOL</small></div></div></div>
-    <div class="tile"><img src="/assets/img/w-gold.webp" alt=""><div><div class="k">Dubs today</div><div class="v" id="hDubs"><span class="skel"></span></div></div></div>
-    <div class="tile"><img src="/assets/img/crown-s.webp" alt=""><div><div class="k">Players</div><div class="v" id="hPlayers"><span class="skel"></span></div></div></div>
   </div>
   <div class="mouse" aria-hidden="true"><i></i></div>
 </header>
 
 <main>
-<!-- 01 the board: the victory podium -->
+<!-- 01 the arena: a floating stadium with a big screen of live duels -->
+<section class="stop" id="arena" data-poi="arena" data-name="The arena">
+  <div class="panel rv">
+    <div class="tab"><b>01</b> The arena</div>
+    <h2 class="pop">1v1 me for SOL</h2>
+    <p class="lead">Run a blocky world for SOL. Switch lanes past walls, jump gaps, slide under beams and grab gold, emeralds and diamonds. Put SOL on your run, or beat someone else's on the <b>exact same world</b>. The winner is paid <b>the second the run ends</b>: 95% of the pot, straight to their wallet.</p>
+    <button type="button" class="resume" id="aResume" hidden></button>
+    <div class="astats">
+      <div><b id="aOpen">0</b><span class="k">Open duels</span></div>
+      <div><b id="aPlayed">0</b><span class="k">Duels played</span></div>
+      <div><b id="aWon">0</b><span class="k">SOL won</span></div>
+      <div><b id="aBest">0</b><span class="k">Best score</span></div>
+    </div>
+    <ol class="asteps">
+      <li><span class="n">1</span><div><b>Pay in</b><p>Your stake goes to an address that belongs to this one duel.</p></div></li>
+      <li><span class="n">2</span><div><b>Run the world</b><p>One life. Blocks run plus gems grabbed is your score.</p></div></li>
+      <li><span class="n">3</span><div><b>Get paid</b><p>Higher score takes 95% of the pot, the moment the run ends.</p></div></li>
+    </ol>
+    <div class="row2 acta">
+      <button type="button" class="btn gold" id="aMake"><svg class="xh" viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h22l11 13-22 23L2 20z" fill="#6ee6ff" stroke="#13256e" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 20h44M13 7l6 13 5-13 5 13 6-13M19 20l5 23 5-23" fill="none" stroke="#13256e" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 10h4l-3 7-4-5z" fill="#fff"/><path d="M29 22h11L27 36z" fill="#2bb8e0"/></svg>Make a duel</button>
+      <button type="button" class="btn ghost" id="aPractice">Practice run</button>
+    </div>
+    <div class="sh-note" id="aClosed" hidden>Real-SOL duels open the moment $DUB launches. Practice runs work right now, so get your aim in.</div>
+    <article class="card lobby">
+      <div class="lbh">
+        <div class="tabs" role="tablist"><button class="on" data-a="open" role="tab">Open duels</button><button data-a="recent" role="tab">Results</button><button data-a="mine" role="tab">Mine</button></div>
+        <span class="live" id="aLive"><i></i><span id="aLiveTxt">connecting</span></span>
+      </div>
+      <ol class="duels" id="aList"></ol>
+      <div class="empty" id="aEmpty" hidden><svg class="xh big" viewBox="0 0 48 48" aria-hidden="true"><path d="M13 7h22l11 13-22 23L2 20z" fill="#6ee6ff" stroke="#13256e" stroke-width="3.5" stroke-linejoin="round"/><path d="M2 20h44M13 7l6 13 5-13 5 13 6-13M19 20l5 23 5-23" fill="none" stroke="#13256e" stroke-width="2.4" stroke-linejoin="round"/><path d="M14 10h4l-3 7-4-5z" fill="#fff"/><path d="M29 22h11L27 36z" fill="#2bb8e0"/></svg><span id="aEmptyTxt"></span></div>
+    </article>
+    <p class="note">5% of every pot goes to the creator wallet; ties are refunded in full. Duels are for players 18 and over, where playing for money is legal.</p>
+  </div>
+</section>
+
+<!-- 02 the board: the victory podium -->
 <section class="stop" id="board" data-poi="board" data-name="The board">
   <div class="panel rv">
-    <div class="tab"><b>01</b> The podium</div>
+    <div class="tab"><b>02</b> The podium</div>
     <h2 class="pop">The board</h2>
     <p class="lead">Every registered player's battle royale wins, read from their public career stats every few minutes. The board starts at zero at 00:00 UTC. Whoever tops it when the day closes is <b>the dev</b>, and the big screen behind the podium shows the top five live.</p>
     <article class="card dev" id="devCard">
@@ -111,10 +147,10 @@
   </div>
 </section>
 
-<!-- 02 register: the locker -->
+<!-- 03 register: the locker -->
 <section class="stop" id="register" data-poi="register" data-name="Register">
   <div class="panel rv">
-    <div class="tab"><b>02</b> The locker</div>
+    <div class="tab"><b>03</b> The locker</div>
     <h2 class="pop">Get on the board</h2>
     <p class="lead">Three steps, about a minute. We never ask for your Epic login: your public stats are enough to count wins, and one privacy switch proves the account is yours. Type your name and watch it go up above your player in the locker.</p>
     <ol class="steps" id="steps">
@@ -166,10 +202,10 @@
   </div>
 </section>
 
-<!-- 03 how it works: the signpost path -->
+<!-- 04 how it works: the signpost path -->
 <section class="stop tall" id="how" data-poi="how" data-name="How it works">
   <div class="panel sticky rv">
-    <div class="tab"><b>03</b> The path</div>
+    <div class="tab"><b>04</b> The path</div>
     <h2 class="pop">Win the game, get paid</h2>
     <p class="lead">Walk the path. Four signs, four steps, and nothing in between that needs trusting a person.</p>
     <ol class="walk" id="walk">
@@ -181,10 +217,10 @@
   </div>
 </section>
 
-<!-- 04 modes: four platforms -->
+<!-- 05 modes: four platforms -->
 <section class="stop" id="modes" data-poi="modes" data-name="Modes">
   <div class="panel rv">
-    <div class="tab"><b>04</b> The platforms</div>
+    <div class="tab"><b>05</b> The platforms</div>
     <h2 class="pop">What counts as a dub</h2>
     <p class="lead">A dub is a battle royale Victory Royale that shows up in your public career stats after you registered. Squad up or go alone: every registered player on the winning team gets their own dub.</p>
     <div class="modes">
@@ -197,10 +233,10 @@
   </div>
 </section>
 
-<!-- 05 the pot: the vault -->
+<!-- 06 the pot: the vault -->
 <section class="stop" id="pot" data-poi="pot" data-name="The pot">
   <div class="panel rv">
-    <div class="tab"><b>05</b> The vault</div>
+    <div class="tab"><b>06</b> The vault</div>
     <h2 class="pop">Where the SOL comes from</h2>
     <p class="lead">Every trade of $DUB pays a creator fee on pump.fun. Those fees pile up in the coin's creator vault on Solana, and that is the pot. We read the vault itself, so the number on this page and on the sign above the vault is the real one.</p>
     <ol class="flow">
@@ -218,10 +254,10 @@
   </div>
 </section>
 
-<!-- 06 the split: the coin stacks -->
+<!-- 07 the split: the coin stacks -->
 <section class="stop" id="split" data-poi="split" data-name="The split">
   <div class="panel rv">
-    <div class="tab"><b>06</b> The stacks</div>
+    <div class="tab"><b>07</b> The stacks</div>
     <h2 class="pop">What's a dub worth?</h2>
     <p class="lead">Move the sliders and watch the stacks on the island change. Gold is the dev cut, blue is everyone's dubs, green is yours.</p>
     <div class="card sliders">
@@ -243,10 +279,10 @@
   </div>
 </section>
 
-<!-- 07 payday: the supply drop -->
+<!-- 08 payday: the supply drop -->
 <section class="stop" id="payday" data-poi="payday" data-name="Payday">
   <div class="panel rv">
-    <div class="tab"><b>07</b> The drop zone</div>
+    <div class="tab"><b>08</b> The drop zone</div>
     <h2 class="pop">Every payout, on the record</h2>
     <p class="lead">At 00:00 UTC the day locks. The payout list is fixed from the board, every payout is sent from the creator wallet, and the moment it lands on-chain it shows up here with a link. One supply drop lands on the pad for every payday.</p>
     <div class="season">
@@ -277,12 +313,22 @@
   </div>
 </section>
 
-<!-- 08 fair play: the watchtower -->
+<!-- 09 fair play: the watchtower -->
 <section class="stop" id="rules" data-poi="rules" data-name="Fair play">
   <div class="panel rv">
-    <div class="tab"><b>08</b> The watchtower</div>
+    <div class="tab"><b>09</b> The watchtower</div>
     <h2 class="pop">Fair play</h2>
-    <p class="lead">The tower sees everything. These rules are written into the tracker, so nobody gets paid for wins that didn't happen.</p>
+    <p class="lead">The tower sees everything. These rules are written into the arena and the tracker, so nobody gets paid for a win that didn't happen.</p>
+    <h3 class="rh">In the arena</h3>
+    <div class="rules">
+      <div class="rule"><b>One run, one life</b><p>Start it and it counts. It ends when you crash, or at 2:00. No pauses, no restarts.</p></div>
+      <div class="rule"><b>Same world for both</b><p>Every duel has one secret seed. Both players run the exact same course, block for block.</p></div>
+      <div class="rule"><b>Every move is checked</b><p>The arena replays your moves on the server and scores the run itself. A run sent back faster than it can be played scores 0.</p></div>
+      <div class="rule"><b>Paid the second it ends</b><p>The winner's 95% goes out in one transaction from the two duel addresses. Ties are refunded.</p></div>
+      <div class="rule"><b>Your SOL, your duel</b><p>Each stake sits in its own address that can only pay the winner or refund the player.</p></div>
+      <div class="rule"><b>Nobody showed?</b><p>Cancel any time before someone takes your duel. Unclaimed duels refund themselves after a day.</p></div>
+    </div>
+    <h3 class="rh">On the board</h3>
     <div class="rules">
       <div class="rule"><b>Stats public</b><p>We read wins from public career stats. Private stats can't be read, so they can't be paid.</p></div>
       <div class="rule"><b>Battle royale only</b><p>Solo, Duos, Trios and Squads count. Limited-time modes and Creative don't.</p></div>
@@ -296,12 +342,18 @@
   </div>
 </section>
 
-<!-- 09 FAQ: the campfire -->
+<!-- 10 FAQ: the campfire -->
 <section class="stop" id="faq" data-poi="faq" data-name="FAQ">
   <div class="panel rv">
-    <div class="tab"><b>09</b> The campfire</div>
+    <div class="tab"><b>10</b> The campfire</div>
     <h2 class="pop">Questions</h2>
     <div class="faq">
+      <details class="qa"><summary>How does a duel work?</summary><div class="a"><p>You pay your stake and run a blocky world: switch lanes, jump and slide for as long as you can last, grabbing gems on the way. Your score goes up in the lobby. Anyone can take you on for the same stake and run the exact same world. The higher score takes 95% of the pot, paid the moment the second run ends.</p></div></details>
+      <details class="qa"><summary>How is a run scored?</summary><div class="a"><p>One point for every block you run, plus every gem you grab: gold 5, emerald 12, diamond 30. You speed up the longer you last. The run ends when you crash, or after 2 minutes.</p></div></details>
+      <details class="qa"><summary>Where is my SOL while I wait?</summary><div class="a"><p>In an address made for your side of that one duel. Only the arena can move what's in it, and only two ways: to the winner, or back to you. You can watch it on Solscan the whole time.</p></div></details>
+      <details class="qa"><summary>What if nobody takes my duel?</summary><div class="a"><p>Cancel it from the lobby any time before someone pays in, and your SOL comes back minus the 0.000005 SOL network fee. Duels nobody takes refund themselves after a day.</p></div></details>
+      <details class="qa"><summary>What stops cheaters?</summary><div class="a"><p>Your score isn't sent, your moves are. The arena replays every move in the duel's secret world and works out the score itself. A run sent back faster than it could be played, or one that took far longer than it could, scores 0.</p></div></details>
+      <details class="qa"><summary>Where does the 5% go?</summary><div class="a"><p>To the creator wallet of $DUB, in the same transaction that pays the winner. A tie pays no fee: both players get their stake back.</p></div></details>
       <details class="qa"><summary>How do you know I won?</summary><div class="a"><p>Fortnite keeps public career stats for every account. Every few minutes we read your battle royale wins through Fortnite-API. When the number goes up, that's a dub.</p></div></details>
       <details class="qa"><summary>Why switch my stats off and on?</summary><div class="a"><p>It proves the account is yours without asking for your login. Only the owner can flip that switch. Without it, anyone could claim a pro player's wins.</p></div></details>
       <details class="qa"><summary>When do I get paid?</summary><div class="a"><p>The day closes at 00:00 UTC. The payout list is fixed then, and each payout is sent from the creator wallet. When it lands, it shows here with a link to the transaction.</p></div></details>
@@ -319,7 +371,46 @@
 </main>
 
 <div id="toast" aria-live="polite"></div>
-<script src="/assets/js/dub.js?v=3" defer></script>
-<script type="module" src="/assets/js/world.js?v=3"></script>
+
+<!-- the duel sheet: make, take, pay, play, result -->
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-label="Duel">
+  <div class="sh-back" data-close></div>
+  <div class="sh-card"><button type="button" class="sh-x" data-close aria-label="Close">✕</button><div class="sh-body" id="shBody"></div></div>
+</div>
+
+<!-- the run: a full-screen 3D world -->
+<div class="game" id="game" hidden>
+  <canvas id="gRun"></canvas>
+  <div class="g-hud">
+    <div class="g-top">
+      <div class="g-score"><span class="k" id="gMode">Practice run</span><b id="gScore">0</b><small id="gSub">0 blocks · 0 gems</small></div>
+      <div class="g-time"><svg viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" class="tr"/><circle cx="22" cy="22" r="20" class="fg" id="gRing"/></svg><b id="gTime">0:00</b></div>
+      <div class="g-side">
+        <div><span class="k">Speed</span><b id="gSpeed">9.0</b></div>
+        <button type="button" class="g-btn" id="gSfx" aria-label="Sound effects on or off">🔊</button>
+        <button type="button" class="g-btn" id="gExit" aria-label="Leave">✕</button>
+      </div>
+    </div>
+    <div class="g-race" id="gRace" hidden><div class="g-rbar"><i id="gRaceFill"></i></div><span><b id="gTarget"></b> to beat · <em id="gRaceTxt"></em></span></div>
+  </div>
+  <div class="g-banner pop" id="gBanner"></div>
+  <div class="g-pops" id="gPops"></div>
+  <div class="g-big pop" id="gBig"></div>
+  <div class="g-help" id="gHelp"></div>
+  <div class="g-end" id="gEnd" hidden></div>
+  <div class="g-confirm" id="gConfirm" hidden><b>End your run now?</b><p>It counts with the score you have so far.</p><div class="row2"><button type="button" class="btn gold sm" id="gKeep">Keep running</button><button type="button" class="btn ghost sm" id="gStop">End run</button></div></div>
+</div>
+
+<!-- DUB radio: YouTube's own player, visible while it plays -->
+<div class="radio" id="radio">
+  <button type="button" class="r-btn" id="rBtn" aria-label="Music on or off"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="r-lbl">Music</span></button>
+  <div class="r-card" id="rCard"><div class="r-head"><b>DUB radio</b><button type="button" id="rHide" aria-label="Stop the music">✕</button></div><div class="r-frame"><div id="ytp"></div></div>
+    <a class="r-fail" id="rFail" hidden href="https://www.youtube.com/watch?v=Yhu7sck0gAA" target="_blank" rel="noopener">Listen on YouTube ↗</a></div>
+</div>
+<script src="/assets/js/arena-core.js?v=2" defer></script>
+<script src="/assets/js/dub.js?v=4" defer></script>
+<script src="/assets/js/arena.js?v=3" defer></script>
+<script src="/assets/js/music.js?v=1" defer></script>
+<script type="module" src="/assets/js/world.js?v=6"></script>
 </body>
 </html>
