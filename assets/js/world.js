@@ -1,7 +1,7 @@
-// DUB's world: one toon-shaded floating island behind the whole site. Every section of the page is a place on
-// the island and the camera flies there as you scroll: the victory podium with the live board, the locker with
-// your player, the signpost path, the mode platforms, the pot vault, the coin stacks, the supply drop, the
-// watchtower and the campfire. The storm wall closes in as payday gets closer.
+// DUB's world: one toon-shaded floating island behind the whole site. Every section of the page is a place in
+// the world and the camera flies there as you scroll: the floating arena with its big screen of live duels, the
+// victory podium with the live board, the locker with your player, the signpost path, the mode platforms, the pot
+// vault, the coin stacks, the supply drop, the watchtower and the campfire. The storm closes in as payday nears.
 import * as THREE from './vendor/three.module.min.js';
 
 const cv = document.getElementById('world');
@@ -30,6 +30,7 @@ function start() {
   const GOLD = 0xffc72a, NAVY = 0x13256e, WHITE = 0xffffff;
   let seed = 11; const rnd = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
   const V = (x, y, z) => new THREE.Vector3(x, y, z);
+  const m4 = new THREE.Matrix4();
   const at = (deg, r, y = 0) => V(Math.sin(deg * Math.PI / 180) * r, y, Math.cos(deg * Math.PI / 180) * r);
 
   // ---------- batching: many static parts -> one toon mesh + one ink mesh ----------
@@ -294,6 +295,86 @@ function start() {
   for (let i = 0; i < 3; i++) { const a = (i / 3 + .08) * Math.PI * 2; const p = player({ scale: .45, swing: .5 }); p.position.set(Math.cos(a) * 3.2, 1.3, Math.sin(a) * 3.2); p.rotation.y = -a - Math.PI / 2; camp.add(p); }
   const qm = label('?', 200, 200, 150, '#ffc72a'); qm.position.set(0, 5, 0); qm.scale.set(2.2, 2.2, 1); camp.add(qm);
 
+
+  // ---------- 0. the arena: a floating stadium off the island's shore, with a big screen of live duels ----------
+  const ARENA = at(247, 42, 6.5);
+  const arenaG = new THREE.Group(); arenaG.position.copy(ARENA); arenaG.rotation.y = Math.atan2(-ARENA.x, -ARENA.z); scene.add(arenaG);
+  { const b = new Batch();
+    const rock = new THREE.ConeGeometry(8.6, 13, 18, 4); rock.rotateX(Math.PI);
+    { const p = rock.attributes.position; for (let i = 0; i < p.count; i++) { const y = p.getY(i); if (y < 6.4 && y > -6.4) { const k = .82 + rnd() * .32; p.setX(i, p.getX(i) * k); p.setZ(i, p.getZ(i) * k); p.setY(i, y + (rnd() - .5) * 1.2); } } }
+    b.add(rock, 0x9a6a46, M(V(0, -6.9, 0)), 1.012);
+    b.add(new THREE.CylinderGeometry(8.9, 8.6, 1.1, 40), 0x8f5cff, M(V(0, 0, 0)), 1.02);
+    b.add(new THREE.CylinderGeometry(7.3, 7.3, .1, 40), 0x2a66f2, M(V(0, .58, 0)), 0);
+    b.add(new THREE.TorusGeometry(4.2, .16, 8, 48), WHITE, M(V(0, .64, 0), [Math.PI / 2, 0, 0]), 0);
+    b.add(new THREE.CylinderGeometry(1.2, 1.2, .1, 32), GOLD, M(V(0, .66, 0)), 0);
+    b.add(new THREE.BoxGeometry(14, .06, .32), WHITE, M(V(0, .64, 0)), 0);
+    // the wall: gold and white blocks with two gaps for the players' entrances
+    for (let i = 0; i < 20; i++) { const a = i / 20 * Math.PI * 2; if (Math.abs(Math.sin(a)) < .2) continue;
+      b.add(new THREE.BoxGeometry(2.2, i % 2 ? 1.1 : 1.5, .7), i % 2 ? WHITE : GOLD, M(V(Math.cos(a) * 8.3, 1.1, Math.sin(a) * 8.3), [0, -a + Math.PI / 2, 0]), 1.05); }
+    // four pillars with gold caps
+    for (const a of [.785, 2.356, 3.927, 5.498]) { const x = Math.cos(a) * 8.6, z = Math.sin(a) * 8.6;
+      b.add(new THREE.CylinderGeometry(.55, .7, 8, 12), WHITE, M(V(x, 4.4, z)), 1.05); b.add(new THREE.CylinderGeometry(.95, .8, .7, 12), GOLD, M(V(x, 8.7, z)), 1.06);
+      b.add(new THREE.SphereGeometry(.5, 12, 10), 0xff4f7e, M(V(x, 9.4, z)), 1.06); }
+    // two player pads, facing each other across the floor
+    for (const x of [-4.6, 4.6]) { b.add(new THREE.CylinderGeometry(1.5, 1.7, .5, 24), x < 0 ? 0x2f6bff : 0xff4f7e, M(V(x, .85, 0)), 1.04); b.add(new THREE.TorusGeometry(1.5, .1, 6, 32), GOLD, M(V(x, 1.12, 0), [Math.PI / 2, 0, 0]), 0); }
+    arenaG.add(b.mesh()); }
+  // banners on the pillars
+  const bannerTex = canvasTex(256, 512, x => { const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, '#8f5cff'); g.addColorStop(1, '#5a2fd6'); x.fillStyle = g; x.fillRect(0, 0, 256, 512);
+    x.fillStyle = '#ffc72a'; x.fillRect(0, 0, 256, 26); x.beginPath(); x.moveTo(0, 470); x.lineTo(128, 512); x.lineTo(256, 470); x.lineTo(256, 512); x.lineTo(0, 512); x.fill();
+    // a blocky diamond
+    x.lineJoin = 'round'; x.beginPath(); x.moveTo(78, 160); x.lineTo(178, 160); x.lineTo(222, 214); x.lineTo(128, 318); x.lineTo(34, 214); x.closePath();
+    x.fillStyle = '#6ee6ff'; x.fill(); x.lineWidth = 12; x.strokeStyle = '#13256e'; x.stroke();
+    x.lineWidth = 7; x.beginPath(); x.moveTo(34, 214); x.lineTo(222, 214); x.moveTo(78, 160); x.lineTo(104, 214); x.lineTo(128, 160); x.lineTo(152, 214); x.lineTo(178, 160); x.moveTo(104, 214); x.lineTo(128, 318); x.lineTo(152, 214); x.stroke();
+    x.fillStyle = '#fff'; x.fillRect(86, 172, 14, 22); popText(x, 'DUB', 128, 410, 84, '#fff'); });
+  texts.push(bannerTex);
+  for (const a of [.785, 2.356, 3.927, 5.498]) { const pl = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 3.2), new THREE.MeshBasicMaterial({ map: bannerTex, side: THREE.DoubleSide }));
+    pl.position.set(Math.cos(a) * 7.75, 5.6, Math.sin(a) * 7.75); pl.lookAt(0, 5.6, 0); arenaG.add(pl); }
+  // the duelists
+  const duelists = [[-4.6, { hood: 0x2f6bff, skin: 0xf3c39e, hair: 0x2b1d14, scale: .62 }], [4.6, { hood: 0xff4f7e, skin: 0xd9a07a, hair: 0x1a1a1a, scale: .62 }]].map(([x, o]) => {
+    const p = player({ ...o, swing: .1 }); p.position.set(x, 1.1, 0); p.rotation.y = x < 0 ? Math.PI / 2 : -Math.PI / 2; arenaG.add(p); return p; });
+  // floating targets between them
+  // floating gem blocks between them: gold, emerald, diamond, in the run's own pixel style
+  const gemTex = ['#ffc72a', '#2edc78', '#6ee6ff'].map((c0, gi) => { const c = document.createElement('canvas'); c.width = c.height = 16; const x = c.getContext('2d');
+    const dark = ['#c98d00', '#11904a', '#1d9cc4'][gi], lite = ['#fff6c2', '#b8fbd6', '#ffffff'][gi];
+    for (let i = 0; i < 16; i++) for (let j = 0; j < 16; j++) { x.fillStyle = i === 0 || j === 0 || i === 15 || j === 15 ? dark : (i + j * 3) % 7 === 0 ? lite : c0; x.fillRect(i, j, 1, 1); }
+    for (let k = 2; k < 8; k++) { x.fillStyle = lite; x.fillRect(k, 2, 1, 1); x.fillRect(2, k, 1, 1); }
+    const t = new THREE.CanvasTexture(c); t.magFilter = t.minFilter = THREE.NearestFilter; t.generateMipmaps = false; t.colorSpace = THREE.SRGBColorSpace; return t; });
+  const targets3 = [[0, 4.4, -1.6], [-1.6, 5.8, 1.4], [1.8, 3.4, 1.2]].map(([x, y, z], i) => {
+    const m = new THREE.Mesh(new THREE.BoxGeometry(1.15, 1.15, 1.15), new THREE.MeshBasicMaterial({ map: gemTex[i] }));
+    const o = new THREE.Mesh(m.geometry, INK); o.scale.setScalar(1.08); m.add(o);
+    m.position.set(x, y, z); m.rotation.set(.5, 0, .5); m.userData = { y, ph: i * 2.1, pop: 0 }; arenaG.add(m); return m; });
+  // stepping stones out to the arena
+  const stones = [];
+  for (let i = 0; i < 5; i++) { const r = 29.4 + i * 1.15, s2 = solid(new THREE.DodecahedronGeometry(.62 - i * .03, 0), 0x9fb3e6, 1.08); s2.position.copy(at(250 + (i % 2 ? 1.6 : -1.6), r, 1.4 + i * 1.6)); s2.userData = { y: s2.position.y, ph: i }; scene.add(s2); stones.push(s2); }
+  // two sweeping spotlights
+  const spots2 = [.785, 3.927].map(a => { const c = new THREE.Mesh(new THREE.ConeGeometry(2.6, 12, 20, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1b0, transparent: true, opacity: .11, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, fog: false }));
+    const g = new THREE.Group(); g.position.set(Math.cos(a) * 8.6, 9.6, Math.sin(a) * 8.6); c.position.y = -5.5; g.add(c); arenaG.add(g); g.userData = { a }; return g; });
+  // the big screen: a hologram that always faces you, with the lobby on it
+  function drawJumbo(st) {
+    return (x, w, h) => {
+      const g = x.createLinearGradient(0, 0, 0, h); g.addColorStop(0, 'rgba(28,59,180,.94)'); g.addColorStop(1, 'rgba(11,26,94,.94)');
+      x.fillStyle = g; rrect(x, 8, 8, w - 16, h - 16, 40); x.fill(); x.lineWidth = 10; x.strokeStyle = '#ffc72a'; x.stroke();
+      x.fillStyle = 'rgba(255,255,255,.05)'; for (let y = 24; y < h - 16; y += 8) x.fillRect(16, y, w - 32, 3);
+      popText(x, 'THE ARENA', w / 2, 74, 66, '#ffc72a');
+      if (!st || st.closed) { popText(x, '1V1 BLOCK RUNS', w / 2, 210, 78); popText(x, 'FOR SOL', w / 2, 300, 78, '#ffe07a'); x.font = `34px ${FONT}`; x.fillStyle = 'rgba(255,255,255,.8)'; x.textAlign = 'center'; x.fillText(st && st.closed ? 'REAL SOL AT LAUNCH · PRACTICE NOW' : 'WINNER PAID THE SECOND IT ENDS', w / 2, 400); return; }
+      popText(x, `${st.open} OPEN ${st.open === 1 ? 'DUEL' : 'DUELS'}${st.live ? ` · ${st.live} LIVE` : ''}`, w / 2, 150, 46, '#fff');
+      if (st.top) { popText(x, `BEAT ${Number(st.top.score).toLocaleString('en-US')}`, w / 2, 250, 96, '#fff');
+        let nm = String(st.top.name || '').toUpperCase(); x.font = `40px ${FONT}`; while (x.measureText(nm).width > 520 && nm.length > 3) nm = nm.slice(0, -2) + '…';
+        popText(x, `${nm} · ${st.top.stake} SOL`, w / 2, 338, 40, '#ffe07a'); }
+      else popText(x, 'MAKE THE FIRST DUEL', w / 2, 270, 64, '#fff');
+      if (st.last && st.last.winner) { const W2 = st.last.winner === 'a' ? st.last.a : st.last.b, L2 = st.last.winner === 'a' ? st.last.b : st.last.a;
+        x.fillStyle = 'rgba(255,199,42,.18)'; rrect(x, 60, 392, w - 120, 74, 20); x.fill();
+        const line = st.last.winner === 'tie' ? 'LAST DUEL: A TIE' : `LAST: ${String(W2.name).toUpperCase().slice(0, 12)} BEAT ${String(L2.name).toUpperCase().slice(0, 12)} · +${st.last.prize}`;
+        popText(x, line, w / 2, 430, 34, '#fff'); }
+    };
+  }
+  const jumboTex = canvasTex(1024, 500, drawJumbo(null)); texts.push(jumboTex);
+  const jumbo = new THREE.Sprite(new THREE.SpriteMaterial({ map: jumboTex, transparent: true, depthWrite: false, fog: false })); jumbo.scale.set(13, 6.35, 1); jumbo.position.set(0, 13.6, 0); arenaG.add(jumbo);
+  // coins that burst out of the arena when a duel is won
+  const BURST = 40, burst = new THREE.InstancedMesh(new THREE.CylinderGeometry(.4, .4, .1, 16), toon(GOLD, false), BURST); burst.frustumCulled = false; arenaG.add(burst);
+  const bursts = Array.from({ length: BURST }, () => ({ t: -1, vx: 0, vy: 0, vz: 0, r: 0 }));
+  for (let i = 0; i < BURST; i++) { m4.compose(V(0, -50, 0), new THREE.Quaternion(), V(.001, .001, .001)); burst.setMatrixAt(i, m4); }
+  let duelHop = -1;
   const LABELS = { register: [nameSpr], modes: modePl.map(g => g.children[g.children.length - 1]), pot: [potSpr], split: stacks.map(s => s.l), payday: [payLabel], faq: [qm] };
   for (const arr of Object.values(LABELS)) for (const s of arr) s.material.opacity = 0;
 
@@ -303,7 +384,9 @@ function start() {
   const starShape = new THREE.Shape(); for (let i = 0; i < 10; i++) { const a = i / 10 * Math.PI * 2 + Math.PI / 2, r = i % 2 ? .44 : 1; i ? starShape.lineTo(Math.cos(a) * r, Math.sin(a) * r) : starShape.moveTo(Math.cos(a) * r, Math.sin(a) * r); }
   const starGeo = new THREE.ExtrudeGeometry(starShape, { depth: .3, bevelEnabled: true, bevelThickness: .1, bevelSize: .08, bevelSegments: 2 }); starGeo.center();
   for (let i = 0; i < 26; i++) {
-    const k = i % 3, d = rnd() * 360, r = 30 + rnd() * 14, o = k === 0 ? solid(new THREE.CylinderGeometry(.75, .75, .18, 22), GOLD, 1.08, false) : k === 1 ? solid(starGeo, rnd() < .7 ? GOLD : WHITE, 1.08) : crown(1.1);
+    const k = i % 3, d = rnd() * 360, r = 30 + rnd() * 14;
+    if (Math.abs(((d - 250 + 540) % 360) - 180) < 26) continue;
+    const o = k === 0 ? solid(new THREE.CylinderGeometry(.75, .75, .18, 22), GOLD, 1.08, false) : k === 1 ? solid(starGeo, rnd() < .7 ? GOLD : WHITE, 1.08) : crown(1.1);
     if (k === 0) o.rotation.x = Math.PI / 2;
     o.position.copy(at(d, r, 4 + rnd() * 14)); o.userData = { y: o.position.y, ph: rnd() * 6, sp: .5 + rnd() }; air.add(o); floaters.push(o);
   }
@@ -336,6 +419,7 @@ function start() {
   const outside = (p, dist, h, side = 0) => { const r = V(p.x, 0, p.z).normalize(), tg = V(-r.z, 0, r.x); return { cam: p.clone().addScaledVector(r, dist).addScaledVector(tg, side).add(V(0, h, 0)), look: p.clone().add(V(0, 2.4, 0)) }; };
   const KEYS = {
     top: () => ({ cam: V(0, 30, 74), look: V(0, 1, 0) }),
+    arena: () => { const k = outside(ARENA, 33, 8, 0); k.look.y = ARENA.y + 6.5; return k; },
     board: () => ({ cam: V(6.5, 10, 16), look: V(0, 7, -5) }),
     register: () => { const k = outside(LOCK, 15, 6.4, -3); k.look.y = 4.4; return k; },
     how: t => { const p = at(255 - 55 * t, 21.6); const k = outside(p, 15, 6.4, 0); k.look.y = 4.4; return k; },
@@ -379,7 +463,7 @@ function start() {
 
   // ---------- the minimap ----------
   const map = document.getElementById('minimap'), mx = map && map.getContext('2d');
-  const POIS = { board: V(0, 0, 0), register: LOCK, how: at(228, 21.6), modes: MODES, pot: POT, split: SPL, payday: PAY, rules: TOW, faq: FIRE };
+  const POIS = { arena: ARENA, board: V(0, 0, 0), register: LOCK, how: at(228, 21.6), modes: MODES, pot: POT, split: SPL, payday: PAY, rules: TOW, faq: FIRE };
   function drawMap() {
     if (!mx) return; const W = map.width, S = W / 2 / 44, c = W / 2;
     mx.clearRect(0, 0, W, W);
@@ -390,6 +474,7 @@ function start() {
     mx.fillStyle = '#47d873'; mx.beginPath(); mx.arc(c, c, R * S, 0, 7); mx.fill();
     mx.strokeStyle = '#e2b277'; mx.lineWidth = 2.5; mx.beginPath(); mx.arc(c, c, 19 * S, 0, 7); mx.stroke();
     const active = stops[stopIndex] && stops[stopIndex].key;
+    { const ax = c + ARENA.x * S, az = c + ARENA.z * S; mx.fillStyle = '#8f5cff'; mx.strokeStyle = '#fff'; mx.lineWidth = 2; mx.beginPath(); mx.arc(ax, az, 9 * S, 0, 7); mx.fill(); mx.stroke(); }
     for (const [k, p] of Object.entries(POIS)) { const on = k === active; mx.fillStyle = on ? '#ffc72a' : '#fff'; mx.strokeStyle = '#13256e'; mx.lineWidth = 2; mx.beginPath(); mx.arc(c + p.x * S, c + p.z * S, on ? 6 : 3.8, 0, 7); mx.fill(); mx.stroke(); }
     const dir = V().subVectors(cur.look, cam.position), ang = Math.atan2(dir.x, dir.z);
     const qx = Math.max(10, Math.min(W - 10, c + cam.position.x * S)), qy = Math.max(10, Math.min(W - 10, c + cam.position.z * S));
@@ -404,8 +489,10 @@ function start() {
 
   // ---------- the loop ----------
   let last = performance.now(), t = 0, mapT = 1, running = false, snapNext = true, snapNext2 = true, viewShift = 0;
-  const tmp = V(), m4 = new THREE.Matrix4(), q4 = new THREE.Quaternion(), e4 = new THREE.Euler(), one = V(1, 1, 1), zero = V(0, 0, 0), UP = V(0, 1, 0);
+  const tmp = V(), q4 = new THREE.Quaternion(), e4 = new THREE.Euler(), one = V(1, 1, 1), zero = V(0, 0, 0), UP = V(0, 1, 0);
+  let paused = false;
   function frame(now) {
+    if (paused) { running = false; return; }
     const dt = Math.max(0, Math.min(.05, (now - last) / 1000)); last = Math.max(last, now); t += dt;
     desired();
     const k = snapNext ? 1 : 1 - Math.exp(-dt * 2.6); snapNext = false;
@@ -438,6 +525,18 @@ function start() {
       falling.userData.bal.visible = falling.userData.str.visible = y > 1.25; falling.scale.setScalar(p > .96 ? Math.max(.001, (1 - p) * 25) : 1); }
     { const ak = stops[stopIndex] ? stops[stopIndex].key : 'top', kk = 1 - Math.exp(-dt * 5);
       for (const [key, arr] of Object.entries(LABELS)) { const on = ak === key || ak === 'top'; for (const s of arr) { s.material.opacity += ((on ? 1 : 0) - s.material.opacity) * (snapNext2 ? 1 : kk); s.visible = s.material.opacity > .02; } } }
+    // the arena
+    duelists.forEach((p, i) => { p.userData.body.position.y = .67 + Math.abs(Math.sin(t * 2.4 + i * 1.3)) * .08; p.rotation.y = (i ? -1 : 1) * Math.PI / 2 + Math.sin(t * 1.1 + i * 2) * .35;
+      if (duelHop >= 0) p.userData.body.position.y = .67 + Math.abs(Math.sin((duelHop + i * .15) * 9)) * 1.1; });
+    if (duelHop >= 0) { duelHop += dt; if (duelHop > 1.8) duelHop = -1; }
+    targets3.forEach(m => { const u = m.userData; m.position.y = u.y + Math.sin(t * 1.6 + u.ph) * .35; m.rotation.y = t * .9 + u.ph; if (u.pop > 0) { u.pop = Math.max(0, u.pop - dt * 2.2); m.scale.setScalar(1 + Math.sin(u.pop * Math.PI) * .6); } });
+    stones.forEach(s3 => { s3.position.y = s3.userData.y + Math.sin(t * 1.4 + s3.userData.ph) * .25; s3.rotation.y += dt * .3; });
+    spots2.forEach((g, i) => { g.rotation.z = Math.sin(t * .9 + i * 2.2) * .5; g.rotation.x = Math.cos(t * .7 + i) * .35; });
+    jumbo.position.y = 13.6 + Math.sin(t * 1.2) * .25;
+    { let any = false; for (let i = 0; i < BURST; i++) { const c = bursts[i]; if (c.t < 0) continue; any = true; c.t += dt;
+        const y = 2 + c.vy * c.t - 9 * c.t * c.t; if (y < -14 || c.t > 3.5) { c.t = -1; m4.compose(V(0, -50, 0), q4.identity(), V(.001, .001, .001)); burst.setMatrixAt(i, m4); continue; }
+        e4.set(c.r + c.t * 8, c.t * 5, 0); q4.setFromEuler(e4); m4.compose(tmp.set(c.vx * c.t, y, c.vz * c.t), q4, one); burst.setMatrixAt(i, m4); }
+      if (any) burst.instanceMatrix.needsUpdate = true; }
     lamp.rotation.y = t * .7; cone.material.opacity = .1 + Math.sin(t * 2) * .03;
     flames.forEach((f, i) => { f.scale.set(1 + Math.sin(t * 9 + i) * .12, 1 + Math.sin(t * 13 + i * 2) * .22, 1 + Math.cos(t * 10 + i) * .12); f.rotation.y = t * (1 + i); });
     floaters.forEach(o => { const u = o.userData; o.position.y = u.y + Math.sin(t * u.sp + u.ph) * .7; o.rotation.y += dt * u.sp; });
@@ -449,7 +548,7 @@ function start() {
     if (running) requestAnimationFrame(frame);
   }
   function play() { if (running) return; running = true; last = performance.now(); requestAnimationFrame(frame); }
-  document.addEventListener('visibilitychange', () => { if (document.hidden) running = false; else if (!RM) play(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) running = false; else if (!RM && !paused) play(); });
 
   // ---------- API for the page ----------
   API.setBoard = rows => redraw(boardTex, drawBoard(rows || []));
@@ -462,6 +561,9 @@ function start() {
   API.snap = () => { measure(); desired(); cur.cam.copy(want.cam); cur.look.copy(want.look); syncCyl(); snapNext = snapNext2 = true; if (!running) frame(performance.now()); };
   API.hop = i => { if (i >= 0 && i < 4) hopT[i] = 0; };
   API.measure = measure;
+  API.setArena = st => redraw(jumboTex, drawJumbo(st || null));
+  API.arenaFx = () => { duelHop = 0; targets3.forEach(m => (m.userData.pop = 1)); bursts.forEach(c => { const a = rnd() * Math.PI * 2, v = 1.5 + rnd() * 3.5; c.t = rnd() * .25; c.vx = Math.cos(a) * v; c.vz = Math.sin(a) * v; c.vy = 9 + rnd() * 6; c.r = rnd() * 6; }); };
+  API.pause = on => { paused = !!on; if (!paused && !RM && !document.hidden) play(); };
   API.ready = true;
   // fonts arrive after the first paint; redraw every sign once Lilita is in
   if (document.fonts && document.fonts.load) document.fonts.load('64px Lilita').then(() => texts.forEach(tx => redraw(tx))).catch(() => {});

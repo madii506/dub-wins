@@ -43,6 +43,7 @@
   /* ---------------- state: HUD, board, dev card, feed ---------------- */
   let S = null, tab = 'today', allCache = null, lastFeedKey = null, firstState = true, lastNudge = 0, prevDubs = new Map();
   function countTo(el, to, fmt) {
+    if (!el) return;
     const from = Number(el.dataset.v ?? NaN); el.dataset.v = to;
     if (!isFinite(from) || RM || from === to) { el.textContent = fmt(to); return; }
     const t0 = performance.now(), d = 700;
@@ -59,7 +60,7 @@
       }
     } catch {
       setLive(null);
-      if (!S) { ['#hPot', '#hDubs', '#hPlayers'].forEach(id => ($(id).textContent = '—')); if (tab === 'today') emptyBoard('The board is reconnecting. Pull to refresh in a moment.'); }
+      if (!S) { ['#hPot', '#hDubs', '#hPlayers'].forEach(id => { const el = $(id); if (el) el.textContent = '—'; }); if (tab === 'today') emptyBoard('The board is reconnecting. Pull to refresh in a moment.'); }
     }
   }
   function setLive(s) {
@@ -127,7 +128,7 @@
     });
   }
   async function showTab(r) {
-    tab = r; $$('.tabs button').forEach(b => b.classList.toggle('on', b.dataset.r === r));
+    tab = r; $$('#board .tabs button').forEach(b => b.classList.toggle('on', b.dataset.r === r));
     $('#lbCols').lastElementChild.textContent = r === 'today' ? 'SOL' : 'Paid';
     if (r === 'today') { if (S) renderState(S); return; }
     try { const j = allCache && Date.now() - allCache.at < 20000 ? allCache.j : await api('/api/board'); allCache = { at: Date.now(), j };
@@ -152,7 +153,7 @@
   /* ---------------- register: find, lock, prove ---------------- */
   const R = { plat: 'epic', player: null, claim: null, timer: null, poll: null };
   function step(n) {
-    $$('#panels .panel').forEach(p => (p.hidden = Number(p.dataset.p) !== n));
+    $$('#panels .step').forEach(p => (p.hidden = Number(p.dataset.p) !== n));
     $$('#steps li').forEach(li => { const s = Number(li.dataset.s); li.classList.toggle('on', s === n); li.classList.toggle('ok', s < n); });
   }
   const out = (id, msg, kind) => { const o = $(id); o.className = 'out' + (kind ? ' ' + kind : ''); o.textContent = msg || ''; };
@@ -308,9 +309,11 @@
   addEventListener('keydown', e => {
     if (e.target.closest && e.target.closest('input,textarea,select,[contenteditable]')) return;
     if (e.metaKey || e.ctrlKey || e.altKey) return;
-    const n = Number(e.key); if (n >= 1 && n <= 9 && slots[n - 1]) { go(slots[n - 1].dataset.to); e.preventDefault(); }
-    if (e.key === '0') go('top');
+    if (document.documentElement.classList.contains('game-on') || document.documentElement.classList.contains('sheet-on')) return;
+    if (/^[0-9]$/.test(e.key)) { const n = Number(e.key), b = slots[n === 0 ? 9 : n - 1]; if (b) { go(b.dataset.to); e.preventDefault(); } }
+    if (e.key === 'Home') go('top');
     if (e.key === 'e' || e.key === 'E') W('emote');
+    if (e.key === 'p' || e.key === 'P') { if (window.DUBA_UI) window.DUBA_UI.practice(); }
   });
   let st = 0; addEventListener('scroll', () => { if (st) return; st = requestAnimationFrame(() => { st = 0; spy(); sweep(); }); }, { passive: true });
   addEventListener('hashchange', () => setTimeout(sweep, 400));
@@ -319,7 +322,7 @@
   function init() {
     intro();
     reveal(); spy();
-    $$('.tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.r)));
+    $$('#board .tabs button').forEach(b => b.addEventListener('click', () => showTab(b.dataset.r)));
     $('#rFind').addEventListener('click', find);
     $('#rName').addEventListener('keydown', e => { if (e.key === 'Enter') find(); });
     $('#rName').addEventListener('input', e => W('setName', e.target.value.trim()));
