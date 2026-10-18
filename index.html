@@ -19,7 +19,7 @@
 <link rel="apple-touch-icon" href="/assets/img/favicon-180.png">
 <link rel="preload" href="/assets/fonts/lilita.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="modulepreload" href="/assets/js/vendor/three.module.min.js">
-<link rel="stylesheet" href="/assets/css/dub.css?v=7">
+<link rel="stylesheet" href="/assets/css/dub.css?v=8">
 </head>
 <body>
 <div class="sky" aria-hidden="true"></div>
@@ -401,16 +401,15 @@
   <div class="g-confirm" id="gConfirm" hidden><b>End your run now?</b><p>It counts with the score you have so far.</p><div class="row2"><button type="button" class="btn gold sm" id="gKeep">Keep running</button><button type="button" class="btn ghost sm" id="gStop">End run</button></div></div>
 </div>
 
-<!-- DUB radio: YouTube's own player, visible while it plays -->
+<!-- DUB radio: the site's song; the Music button turns it on and off -->
 <div class="radio" id="radio">
-  <button type="button" class="r-btn" id="rBtn" aria-label="Music on or off"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="r-lbl">Music</span></button>
-  <div class="r-card" id="rCard"><div class="r-head"><b>DUB radio</b><button type="button" id="rHide" aria-label="Stop the music">✕</button></div><div class="r-frame"><div id="ytp"></div></div>
-    <a class="r-fail" id="rFail" hidden href="https://www.youtube.com/watch?v=Yhu7sck0gAA" target="_blank" rel="noopener">Listen on YouTube ↗</a></div>
+  <button type="button" class="r-btn" id="rBtn" aria-label="Music on or off" title="Music on / off"><span class="eq" aria-hidden="true"><i></i><i></i><i></i><i></i></span><span class="r-lbl">Music</span></button>
+  <div class="r-card" id="rCard" aria-hidden="true"><div class="r-frame"><div id="ytp"></div></div></div>
 </div>
 <script src="/assets/js/arena-core.js?v=2" defer></script>
 <script src="/assets/js/dub.js?v=4" defer></script>
 <script src="/assets/js/arena.js?v=3" defer></script>
-<script src="/assets/js/music.js?v=1" defer></script>
+<script src="/assets/js/music.js?v=2" defer></script>
 <script type="module" src="/assets/js/world.js?v=6"></script>
 </body>
 </html>
